@@ -1,37 +1,8 @@
-## Welcome to GitHub Pages
+## Angeleah Hoeppner
 
-You can use the [editor on GitHub](https://github.com/gelbelle/gelbelle.github.io/edit/master/index.md) to maintain and preview the content for your website in Markdown files.
+Coder extraordinaire in the making.
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+I am a dichotomy of design and geekery. From a young age I've been fascinated by computers and I've completed thousands of hours of training: through school and by myself. The only rival to tech in my life has been art. I received my first camera as a child and have pursued this with equal passion to coding. In addition to photography, I am a graphic, webpage, and software designer. As soon as I designed my first program, an education game for a school project, I knew that this was something I wanted to pursue. I got to combine my love of backend, frontend, and my work with children into one happy bundle.
 
-### Markdown
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
-
-```markdown
-Syntax highlighted code block
-
-# Header 1
-## Header 2
-### Header 3
-
-- Bulleted
-- List
-
-1. Numbered
-2. List
-
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
-```
-
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
-
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/gelbelle/gelbelle.github.io/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://help.github.com/categories/github-pages-basics/) or [contact support](https://github.com/contact) and we’ll help you sort it out.
+Please feel free to contact me with any thoughts, tips, or jobs. :)
