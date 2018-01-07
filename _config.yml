@@ -1,3 +1,4 @@
 name: Gelbelle
 markdown: kramdown
 highlighter: rouge
+baseurl: gelbelle.github.io
