@@ -1,9 +1,7 @@
 ---
 layout: default
-title: Portfolio
+title: portfolio
 ---
-
-
             <!--About-->
             <div id="about" class="row">
                 <h1>About Me</h1>
@@ -409,9 +407,8 @@ title: Portfolio
                     </div>
                     <!--//First Edition Modal-->
                 </div>
+                <!--Container-Fluid-->
             </div>
-            <!--Container-Fluid-->
-
             <!--Portfolio Ends-->
 
             <!--Contact-->
@@ -469,30 +466,3 @@ title: Portfolio
   </div>
 </div>
 End Social-->
-
-            <!-- Start Footer -->
-            <hr>
-            <div class="row">
-                <div class="col-lg-2 ftr-style">
-                    <button class="btn btn-block btn-contact"><i class="fa fa-paper-plane"></i> Contact</button>
-                </div>
-                <div class="col-lg-10">
-                    <div class="btn-group">
-                        <button class="btn btn-sq-xs btn-facebook"><i class="fa fa-thumbs-up"></i></button>
-                        <button class="btn btn-sq-xs btn-twitter"><i class="fa fa-twitter"></i></button>
-                        <button class="btn btn-sq-xs btn-linkedin"><i class="fa fa-linkedin-square"></i></button>
-                        <button class="btn btn-sq-xs btn-github"><i class="fa fa-github-alt"></i></button>
-                        <button class="btn btn-sq-xs btn-freecodecamp"><i class="fa fa-free-code-camp"></i></button>
-                        <button class="btn btn-sq-xs btn-instagram"><i class="fa fa-instagram"></i></button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!--//Home-->
-    </div>
-    <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js'></script>
-    <script src='https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js'></script>
-    <script src="js/index.js"></script>
-</body>
-
-</html>
