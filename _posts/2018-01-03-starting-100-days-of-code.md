@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Starting 100 Days of Code
+title: "Starting 100 Days of Code"
 date: 2018-01-03
 ---
 
