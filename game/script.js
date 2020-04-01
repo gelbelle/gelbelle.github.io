@@ -29,69 +29,126 @@ function loadSprites() {
 }
 
 class GameCharacter {
-    constructor(x, y, width, height, color, speed) {
+    constructor(x, y, width, height, speedX = 0, speedY = 0) {
         this.x = x;
         this.y = y;
         this.width = width;
         this.height = height;
-        this.color = color;
-        this.speed = speed;
+        this.speedX = speedX;
+        this.speedY = speedY;
         this.maxSpeed = 3;
     }
 
-    moveX() {
-        if ((this.x > CVS_WIDTH - this.width) | (this.x < 0)) {
-            this.speed = -this.speed;
+    move() {
+        if (this.x > CVS_WIDTH - this.width) {
+            this.speedX = CVS_WIDTH - this.speedX;
         }
-        this.x += this.speed;
-    }
+        if (this.x < 0) {
+            this.x = 0;
+        }
+        this.x += this.speedX;
 
-    moveY() {
-        if ((this.y > CVS_HEIGHT - this.height) | (this.y < 0)) {
-            this.speed = -this.speed;
+        if (this.y > CVS_HEIGHT - this.height) {
+            this.speedY = -this.speedY;
         }
-        this.y += this.speed;
+
+        if (this.y < 0) {
+            this.y = 0;
+        }
+
+        this.y += this.speedY
     }
 }
 
-//***Enemies
-let rect1 = new GameCharacter(110, 50, 40, 40, "olive", 2);
-let rect2 = new GameCharacter(290, 200, 40, 40, "cadetblue", 3);
-let rect3 = new GameCharacter(475, 350, 40, 40, "darkorange", 4);
-let enemies = [rect1, rect2, rect3];
+class Enemy extends GameCharacter {
+    constructor(x, y, width, height, speedX, speedY = speedX) {
+        super(x, y, width, height, speedX, speedY);
+    }
 
-let player = new GameCharacter(10, CVS_HEIGHT / 2, 40, 40, "lightpink", 0);
+    move() {
+        if (this.x > CVS_WIDTH - this.width | this.x < this.width) {
+            this.speedX = -this.speedX;
+        }
+        if (this.y > CVS_HEIGHT - this.height | this.y < this.height) {
+            this.speedY = -this.speedY;
+        }
+
+        this.x += this.speedX;
+        this.y += this.speedY;
+    }
+}
+
+
+
+//***Enemies
+let numEn = 0;
+if (CVS_WIDTH > 900) {
+    numEn = 5;
+} else if (CVS_WIDTH > 500) {
+    numEn = 3;
+} else {
+    numEn = 1;
+}
+
+let enemies = createEnemies(numEn);
+
+function createEnemies(numEnemies) {
+    let enemiesList = new Array(numEnemies);
+    let en;
+    for (let i = 0; i < numEnemies; i++) {
+        en = new Enemy(getRandom(50, (CVS_WIDTH - 40)), getRandom(40, (CVS_HEIGHT - 40)), 40, 40, getRandom(2, 5));
+        enemiesList.push(en);
+    }
+    return enemiesList;
+}
+
+let player = new GameCharacter(10, CVS_HEIGHT / 2, 40, 40);
 let goal = new GameCharacter(
     CVS_WIDTH - 55,
     CVS_HEIGHT / 2,
     36,
     100,
-    "green",
-    0
 );
+
+function getRandom(min, max) {
+    return Math.floor(Math.random() * (max - min) + min);
+}
 
 document.onkeydown = function (event) {
     let keyPressed = event.keyCode;
 
+    //Right arrow
     if (keyPressed == 39) {
-        player.speed = player.maxSpeed;
+        player.speedX = player.maxSpeed;
+    }
+    //Left arrow
+    if (keyPressed == 37) {
+        player.speedX = -player.maxSpeed;
     }
 
-    if (keyPressed == 37) {
-        player.speed = -player.maxSpeed;
+    //Up arrow
+    if (keyPressed == 40) {
+        player.speedY = player.maxSpeed;
+    }
+
+    //Down arrow
+    if (keyPressed == 38) {
+        player.speedY = -player.maxSpeed;
     }
 };
 
 document.onkeyup = function (event) {
     let keyPressed = event.keyCode;
-    if ((keyPressed == 39) | (keyPressed == 37)) {
-        player.speed = 0;
+    if ((keyPressed == 39) | (keyPressed == 37) | (keyPressed == 38) | (keyPressed == 40)) {
+        player.speedX = 0;
+        player.speedY = 0;
     }
 };
 
 function pauseGame() {
     player.x = 0;
-    player.speed = 0;
+    player.speedX = 0;
+    player.speedY = 0;
     // enemies.forEach(function (element) {
     //     element.speed = 0;
     // });
@@ -120,18 +177,29 @@ function checkCollision(obj1, obj2) {
 }
 
 function moveChar(enemy) {
-    enemy.moveY();
-    player.moveX();
+    enemy.move();
+    player.move();
 
     if (checkCollision(enemy, player)) {
-        losses++;
+        updateScore("lose");
         endGame("You lose");
     }
 
     if (checkCollision(player, goal)) {
-        wins++;
+        updateScore("win");
         endGame("You Win");
     }
+}
+
+function updateScore(type) {
+    if (type == "lose") {
+        losses++;
+    } else {
+        wins++;
+    }
+    score = wins - losses;
+    gameStats.innerHTML = `Wins: ${wins} <br>Losses: ${losses} <br>Score: ${score}`;
+
 }
 
 function endGame(message) {
