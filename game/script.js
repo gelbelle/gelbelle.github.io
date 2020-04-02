@@ -2,14 +2,14 @@
 
 let canvas = document.getElementById("canvas");
 let ctx = canvas.getContext("2d");
-let CVS_WIDTH = canvas.width;
-let CVS_HEIGHT = canvas.height;
+const CVS_WIDTH = canvas.width;
+const CVS_HEIGHT = canvas.height;
 let container = document.getElementById("container");
 let gameStats = document.getElementById("gameStats");
 let wins = 0;
 let losses = 0;
 let score = wins - losses;
-
+const PLAYER_HEIGHT = 40;
 let gameRunning = true;
 
 let sprites = {};
@@ -41,7 +41,7 @@ class GameCharacter {
 
     move() {
         if (this.x > CVS_WIDTH - this.width) {
-            this.speedX = CVS_WIDTH - this.speedX;
+            this.x = CVS_WIDTH - this.width;
         }
         if (this.x < 0) {
             this.x = 0;
@@ -49,7 +49,7 @@ class GameCharacter {
         this.x += this.speedX;
 
         if (this.y > CVS_HEIGHT - this.height) {
-            this.speedY = -this.speedY;
+            this.y = CVS_HEIGHT - this.height;
         }
 
         if (this.y < 0) {
@@ -66,10 +66,10 @@ class Enemy extends GameCharacter {
     }
 
     move() {
-        if (this.x > CVS_WIDTH - this.width | this.x < this.width) {
+        if (this.x > CVS_WIDTH - (this.width + goal.width + 15) | this.x < player.width + 20) {
             this.speedX = -this.speedX;
         }
-        if (this.y > CVS_HEIGHT - this.height | this.y < this.height) {
+        if (this.y > CVS_HEIGHT - this.height | this.y < 0) {
             this.speedY = -this.speedY;
         }
 
@@ -77,7 +77,6 @@ class Enemy extends GameCharacter {
         this.y += this.speedY;
     }
 }
-
 
 
 //***Enemies
@@ -96,18 +95,18 @@ function createEnemies(numEnemies) {
     let enemiesList = new Array(numEnemies);
     let en;
     for (let i = 0; i < numEnemies; i++) {
-        en = new Enemy(getRandom(50, (CVS_WIDTH - 40)), getRandom(40, (CVS_HEIGHT - 40)), 40, 40, getRandom(2, 5));
+        en = new Enemy(getRandom(50, (CVS_WIDTH - 40)), getRandom(40, (CVS_HEIGHT - 40)), 35, 35, getRandom(2, 5));
         enemiesList.push(en);
     }
     return enemiesList;
 }
 
-let player = new GameCharacter(10, CVS_HEIGHT / 2, 40, 40);
+let player = new GameCharacter(10, CVS_HEIGHT / 2 - PLAYER_HEIGHT / 2, 35, PLAYER_HEIGHT);
 let goal = new GameCharacter(
     CVS_WIDTH - 55,
     CVS_HEIGHT / 2,
-    36,
-    100,
+    35,
+    35,
 );
 
 function getRandom(min, max) {
@@ -147,6 +146,7 @@ document.onkeyup = function (event) {
 
 function pauseGame() {
     player.x = 0;
+    player.y = CVS_HEIGHT / 2 - PLAYER_HEIGHT / 2;
     player.speedX = 0;
     player.speedY = 0;
     // enemies.forEach(function (element) {
