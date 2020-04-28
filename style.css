@@ -1,0 +1,96 @@
+* {
+    margin: 0;
+    padding: 0;
+    --pink-highlight: #c9094a;
+    --background: #222;
+    font-family: 'raleway', sans-serif;
+    --background-art1: (@grid: 11x2 / 30vh 100vw;
+            margin: -220px;
+            padding: -20px;
+        );
+    --background-art2: (background: #c9094a;
+            transform: scale(@r(.2, .4)) translate3d(@r(10px), @r(50px), 0);
+            background: @pick(var(--pink-highlight), var(--pink-highlight), var(--pink-highlight), var(--background), var(--background), white);
+            opacity: calc(@r(1, 5) /10);
+            border-radius: 50%;
+        );
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+}
+
+button,
+.top,
+a {
+    min-width: 48px;
+    min-height: 48px;
+}
+
+header {
+    width: 100%;
+}
+
+/* ***Navigation*** */
+nav {
+    z-index: 0;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    max-width: 100%;
+    width: 100%;
+    background-color: var(--background);
+}
+
+ul {
+    list-style: none;
+    z-index: 4;
+}
+
+.top {
+    font-weight: bold;
+    color: var(--pink-highlight);
+    justify-self: space-around;
+}
+
+.top:hover>ul,
+.top:focus-within>ul,
+.dropdown:hover {
+    visibility: visible;
+    opacity: 1;
+    display: block;
+}
+
+.dropdown {
+    visibility: hidden;
+    opacity: 0;
+    display: none;
+}
+
+button {
+    border-style: none;
+    background-color: var(--background);
+    color: white;
+}
+
+button:hover {
+    color: var(--pink-highlight);
+}
+
+css-doodle {
+    position: fixed;
+    z-index: 1;
+}
+
+#output {
+    display: flex;
+    flex-flow: column wrap;
+    flex-grow: 1;
+    align-self: flex-end;
+    align-content: center;
+    padding: .6em;
+    border: 2px solid var(--pink-highlight);
+    z-index: 2;
+    width: 80vw;
+}
