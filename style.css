@@ -4,12 +4,12 @@
     --pink-highlight: #c9094a;
     --background: #222;
     font-family: 'raleway', sans-serif;
-
 }
 
 body {
     display: flex;
     flex-direction: column;
+    background-color: var(--pink-highlight);
 }
 
 button,
