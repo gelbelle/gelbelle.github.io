@@ -56,7 +56,6 @@ function chessboard(size) {
   }
 }
 
-//document.getElementById("project33").addEventListener("click", clearOutput);
 addClickHandler("project23", () => {
   chessboard(8);
 });
