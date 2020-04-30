@@ -4,7 +4,7 @@
     --pink-highlight: #c9094a;
     --background: #222;
     font-family: 'raleway', sans-serif;
-    --background-art1: (@grid: 11x1 / 30vh 100vw;
+    --background-art1: (@grid: 11x1 / 100vh 100vw;
             margin: -220px;
             padding: -20px;
         );
