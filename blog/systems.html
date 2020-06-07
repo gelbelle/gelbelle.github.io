@@ -5,7 +5,7 @@ title: Systems
 <ul>
     {% for system in site.systems %}
     <li>
-        <h2 class="subheading"><a href="system.url">{{system.type}}</a></h2>
+        <h2 class="subheading"><a href="{{'system.url' | relative_url}}">{{system.type}}</a></h2>
         {{ system.content | markdownify}}
     </li>
     {% endfor %}

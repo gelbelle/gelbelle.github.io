@@ -13,7 +13,8 @@ head: Latest Posts
     {% for type in system.type %}
     {% assign games = site.games | where: "system", type%}
     <ul> {% for game in games %}
-        <li><a href="{{game.url}}">{{game.name}}<br /><img src="{{game.image-path}}" alt="{{game.alt-text}}"></a></li>
+        <li><a href="{{game.url | relative_url}}">{{game.name}}<br /><img src="{{game.image-path}}"
+                    alt="{{game.alt-text}}"></a></li>
         {% endfor %}
     </ul>
     {% endfor %}
