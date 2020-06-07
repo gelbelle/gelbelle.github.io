@@ -1,0 +1,13 @@
+---
+layout: blog
+---
+
+<div class="post-header">
+    <span class="post-date">{{ page.date | date: "%B %d, %Y" }}</span>
+    <p><span class="title">Dungeon Master:</span>{% assign dm = site.dms | where: 'name', page.dm | first %}
+        {% if dm %}
+        <a href="{{dm.url}}" title="{{dm.discord_handle}}"><span class="master-name">{{dm.name}}</span></a>
+        {% endif%}
+    </p>
+</div>
+{{content | markdownify}}

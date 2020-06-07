@@ -1,0 +1,23 @@
+---
+layout: default
+head: Latest Posts
+---
+
+<div class="main-content">
+    {{content}}
+</div>
+
+<div class="side-bar">
+    {% for system in site.systems %}
+    <h3>{{system.type}}</h3>
+    {% for type in system.type %}
+    {% assign games = site.games | where: "system", type%}
+    <ul> {% for game in games %}
+        <li><a href="{{game.url}}">{{game.name}}<br /><img src="{{game.image-path}}" alt="{{game.alt-text}}"></a></li>
+        {% endfor %}
+    </ul>
+    {% endfor %}
+    <!-- End type loop -->
+    {% endfor %}
+    <!-- End system loop -->
+</div>
