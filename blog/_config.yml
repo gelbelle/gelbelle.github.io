@@ -34,3 +34,6 @@ plugins:
   - jekyll-feed
   - jekyll-sitemap
   - jekyll-seo-tag
+  
+name: Angeleah Hoeppner
+markdown: kramdown
