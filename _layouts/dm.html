@@ -1,0 +1,16 @@
+---
+layout: default
+---
+
+{{ content}}
+
+<h5>Discord: {{ page.discord_handle }}</h5>
+
+<h2 class="subheading">Latest Game News</h2>
+<ul>
+    {% assign filtered_posts = site.posts | where: 'dm', page.name %}
+    {% for post in filtered_posts %}
+    <li><a href="{{ post.url | relative_url }}">{{ post.title }}</a>
+        {{post.excerpt | truncate: 80, "..."}}</li>
+    {% endfor %}
+</ul>

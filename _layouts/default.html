@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ page.title }}</title>
+    <link rel="stylesheet" href="{{site.baseurl}}{{'/assets/css/styles.css' | relative_url}}">
+    {% feed_meta %}
+    {% seo %}
+</head>
+
+<body>
+    <header>
+        <h1>{{page.title}}</h1>
+        <nav id="navigation" role="navigation">
+            <input type="checkbox" id="toggle" hidden>
+            <label for="toggle">
+                <div id="hamburger">
+                    <div id="top-bar"></div>
+                    <div id="middle-bar"></div>
+                    <div id="bottom-bar"></div>
+                </div>
+            </label>
+
+            <div id="main-menu">
+                {% include navigation.html %}
+            </div>
+        </nav>
+    </header>
+    <div id="container">
+        {{ content }}
+    </div>
+</body>
+
+</html>

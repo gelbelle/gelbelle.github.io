@@ -1,0 +1,13 @@
+---
+title: Dungeon Masters
+---
+
+<ul id="dms">
+    {% for dm in site.dms %}
+    <li>
+        <h2 class="subheading"><a href="{{ dm.url | relative_url }}">{{ dm.name }}</a></h2>
+        <h4>{{ dm.discord_handle }}</h4>
+        {{ dm.content | markdownify }}
+    </li>
+    {% endfor %}
+</ul>

@@ -1,0 +1,14 @@
+---
+layout: blog
+title: Latest Posts...
+---
+
+<ul>
+    {% for post in site.posts %}
+    <li class="post-list">
+        <h3><a href="{{post.game.url | relative_url}}" class="post-game-title">{{post.game}}<a></h3>
+        <h2><a href="{{post.url | relative_url}}" class="post-title">{{post.title}}</a></h2>
+        {{post.excerpt | truncate: 80, '...'}}
+    </li>
+    {% endfor %}
+</ul>
