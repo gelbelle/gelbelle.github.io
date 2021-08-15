@@ -1,23 +1,17 @@
+"use strict"
+
 const canvas = document.querySelector("canvas");
 const ctx = canvas.getContext("2d");
 
-const width = canvas.width = window.innerWidth;
-const height = canvas.height = window.innerHeight;
-
-canvas.addEventListener("touchstart", handleTouch, false);
-canvas.addEventListener("touchend", handleEnd, false);
-canvas.addEventListener("touchmove", handleTouch, false);
-canvas.addEventListener("touchcancel", handlecancel, false);
+const canvasWidth = canvas.width = window.innerWidth;
+const canvasHeight = canvas.height = window.innerHeight;
 
 let score = 0;
 
 //** Handles sizing to full width regardless of scrollbars
 function handleFullWidthSizing() {
     const scrollbarWidth = window.innerWidth - document.body.clientWidth;
-    // const scrollbarHeight = window.innerHeight - document.body.clientHeight;
-    // document.querySelector("canvas").style.height = `calc(50hw - ${scrollbarHeight}px)`;
     document.querySelector("canvas").style.width = `calc(100vw - ${scrollbarWidth}px)`;
-    // console.log(`inner ${window.innerWidth} client ${document.body.clientWidth}`);
 }
 
 if (document.readyState === "complete") {
@@ -37,15 +31,6 @@ screen.orientation.addEventListener("change", function() {
     console.log(`Orientation changed. ${screen.orientation.type}`);
 });
 
-function touchHandler(evt) {
-    if (evt.touches) {
-        evil.x = evt.touches[0].pageX - canvas.offsetLeft - evil.size / 2;
-        evil.y = evt.touches[0].pageY - canvas.offsetTop - evil.size / 2;
-        console.log(`Touch X: ${evil.x} Y: ${evil.y}`);
-        evt.preventDefault();
-    }
-}
-
 //** Creating a Shape **//
 function Shape(x, y, velX, velY, exists = true) {
     this.x = x;
@@ -55,100 +40,135 @@ function Shape(x, y, velX, velY, exists = true) {
     this.exists = exists;
 }
 
-function shapeEater(x, y, velX = 20, velY = 20) {
-    Shape.call(this, x, y, velX, velY);
-    this.size = 50;
-    this.color = "black";
-    this.inputEnabled = true;
-    this.input.enableDrag();
-    this.events.onDragStart.add(onDragStart, this);
-    this.events.onDragStop.add(onDragStop, this);
-}
+let shapeEater = {
+    init() {
+        this.width = 50;
+        this.height = 50;
+        this.x = canvasWidth / 2 - this.width / 2;
+        this.y = canvasHeight / 2 - this.height / 2;
+        this.velX = 20;
+        this.velY = 20;
+        this.color = "black";
+    },
 
-shapeEater.prototype.onDragStart = function() {
-    console.log("Moving");
-}
+    draw: function() {
+        ctx.beginPath();
+        ctx.fillStyle = this.color;
+        ctx.fillRect(this.x, this.y, this.width, this.height);
+    },
 
-shapeEater.prototype.onDragStop = function() {
-    console.log(`Done moving at ${this.x} ${this.y}`);
-}
-
-shapeEater.prototype.draw = function() {
-    ctx.fillStyle = this.color;
-    ctx.fillRect(width / 2 - this.size / 2, height / 2 - this.size / 2, this.size, this.size);
-}
-
-shapeEater.prototype.update = function() {
-    if ((this.x + this.size) >= width) {
-        this.x = width - this.size;
-    }
-    if ((this.x - this.size) <= 0) {
-        this.x = this.size;
-    }
-    if ((this.y + this.size) >= height) {
-        this.y = height - this.size;
-    }
-    if ((this.y - this.size) <= 0) {
-        this.y = this.size;
-    }
-}
-
-shapeEater.prototype.setControls = function() {
-    let _this = this;
-    window.onkeydown = function(evt) {
-        if (evt.key === "a" || evt.key === "ArrowLeft") {
-            _this.x -= _this.velX;
-        } else if (evt.key === "d" || evt.key === "ArrowRight") {
-            _this.x += _this.velX;
-        } else if (evt.key === "w" || evt.key === "ArrowUp") {
-            _this.y -= _this.velY;
-        } else if (evt.key === "s" || evt.key === "ArrowDown") {
-            _this.y += _this.velY;
+    setControls() {
+        let _this = this;
+        window.onkeydown = function(evt) {
+            if (evt.key === "a" || evt.key === "ArrowLeft") {
+                _this.x -= _this.velX;
+            } else if (evt.key === "d" || evt.key === "ArrowRight") {
+                _this.x += _this.velX;
+            } else if (evt.key === "w" || evt.key === "ArrowUp") {
+                _this.y -= _this.velY;
+            } else if (evt.key === "s" || evt.key === "ArrowDown") {
+                _this.y += _this.velY;
+            }
         }
-    }
-}
+    },
 
-shapeEater.prototype.detectCollision = function() {
-    for (let ball of balls) {
-        if (ball.exists) {
-            const dx = this.x - ball.x;
-            const dy = this.y - ball.y;
-            const dist = Math.sqrt(dx * dx + dy * dy);
+    update() {
+        if (this.x <= 0) {
+            this.x = 0;
+        }
+        if (this.x + this.width >= canvasWidth) {
+            this.x = canvasWidth - this.width;
+        }
+        if (this.y <= 0) {
+            this.y = 0;
+        }
+        if (this.y + this.height >= canvasHeight) {
+            this.y = canvasHeight - this.height;
+        }
+    },
 
-            if (dist < this.size + ball.size) {
-                ball.exists = false;
-                balls = balls.filter(el => el.exists !== false);
-                score++
+    detectCollision() {
+        let offsetX;
+        let offsetY;
+
+        for (let ball of balls) {
+            if (ball.exists) {
+                offsetX = setOffsetX(ball, this);
+
+                offsetY = setOffsetY(ball, this);
+
+
+                if (distance(ball.x, ball.y, offsetX, offsetY) < ball.radius) {
+                    ball.exists = false;
+                    balls = balls.filter(el => el.exists !== false);
+                    score++
+                }
             }
         }
     }
 }
 
+let setOffsetX = function(ball, checking) {
+    let offsetX;
+    if (ball.x < checking.x) {
+        offsetX = checking.x;
+    } else if (ball.x > checking.x + checking.width) {
+        offsetX = checking.x + checking.width;
+    } else {
+        offsetX = ball.x;
+    }
+
+    return offsetX;
+}
+
+let setOffsetY = function(ball, checking) {
+    let offsetY;
+    if (ball.y < checking.y) {
+        offsetY = checking.y;
+    } else if (ball.y > checking.y + checking.height) {
+        offsetY = checking.y + checking.height;
+    } else {
+        offsetY = ball.y;
+    }
+
+    return offsetY;
+}
+
+let distance = function(x1, y1, x2, y2) {
+    let distX = (x2 - x1) * (x2 - x1);
+    let distY = (y2 - y1) * (y2 - y1);
+
+    return Math.sqrt(distX + distY);
+}
+
 //** Creating a Ball **//
-function Ball(x, y, velX, velY, color, size) {
+function Ball(x, y, velX, velY, color, radius) {
     Shape.call(this, x, y, velX, velY);
     this.color = color;
-    this.size = size;
+    this.radius = radius;
+    this.right = this.x + radius;
+    this.left = this.x - radius;
+    this.top = this.y - radius;
+    this.bottom = this.y + radius;
 }
 
 Ball.prototype.draw = function() {
     ctx.beginPath();
     ctx.fillStyle = this.color;
-    ctx.arc(this.x, this.y, this.size, 0, 2 * Math.PI);
+    ctx.arc(this.x, this.y, this.radius, 0, 2 * Math.PI);
     ctx.fill();
 }
 
 Ball.prototype.update = function() {
-    if ((this.x + this.size) >= width || (this.x - this.size) <= 0) {
+    if ((this.x + this.radius) >= canvasWidth || (this.x - this.radius) <= 0) {
         this.velX = -(this.velX);
     }
 
-    if ((this.y + this.size) >= height || (this.y - this.size) <= 0) {
+    if ((this.y + this.radius) >= canvasHeight || (this.y - this.radius) <= 0) {
         this.velY = -(this.velY);
     }
 
     this.x += this.velX;
-    console.log(`height ${height} width ${width}`);
     this.y += this.velY;
 }
 
@@ -159,7 +179,7 @@ Ball.prototype.detectCollision = function() {
             const dy = this.y - ball.y;
             const dist = Math.sqrt(dx * dx + dy * dy);
 
-            if (dist < this.size + ball.size) {
+            if (dist < this.radius + ball.radius) {
                 ball.color = this.color = `rgb(${randomNum(0,255)}, ${randomNum(0,255)}, ${randomNum(0,255)})`;
                 this.velX = -this.velX;
                 this.velY = -this.velY;
@@ -176,14 +196,18 @@ let randomNum = function(min, max) {
 
 
 //** Draw Button **//
-function drawButton(message, x = canvas.width, y = canvas.height) {
+function drawButton(message, x, y) {
+    if (!x) {
+        x = canvas.width / 2;
+    }
+    if (!y) {
+        y = canvas.height / 3;
+    }
     let msg = drawMessage(message, x, y, 16);
-
     const msgWidth = msg.width;
     const msgHeight = msg.height;
     const btnWidth = msgWidth + (msgWidth / 2);
     const btnHeight = msgHeight + (msgHeight / 4);
-    console.log(`message size ${msgWidth} ${msgHeight}`);
 
     ctx.fillStyle = "#ffae42";
     ctx.fillRect(x - btnWidth / 2, y - btnHeight / 3, btnWidth, btnHeight);
@@ -199,8 +223,8 @@ function drawButton(message, x = canvas.width, y = canvas.height) {
 }
 //** Draw Message **//
 
-let drawMessage = function(message, x, y, size, textColor = "white") {
-    ctx.font = size + "px Arial, bold";
+let drawMessage = function(message, x, y, radius, textColor = "white") {
+    ctx.font = radius + "px Arial, bold";
     //const textInfo = ctx.measureText(message);
     let textHeight = Number(ctx.font.match(/\d+/).pop());
     ctx.textAlign = "center";
@@ -209,7 +233,7 @@ let drawMessage = function(message, x, y, size, textColor = "white") {
     let max = 0;
     for (let line of lines) {
         ctx.fillText(line, x, y + textHeight);
-        textHeight += textHeight + size;
+        textHeight += textHeight + radius;
         if (ctx.measureText(line).width > max) {
             max = ctx.measureText(line).width;
         }
@@ -221,28 +245,28 @@ let drawMessage = function(message, x, y, size, textColor = "white") {
     };
 }
 
-let balls = [];
-
-while (balls.length <= 25) {
-    let size = randomNum(10, 20);
-    let ball = new Ball(randomNum(0 + size, width - size), randomNum(0 + size, height - size), randomNum(-7, 7), randomNum(-7, 7), `rgb(${randomNum(0,255)}, ${randomNum(0,255)}, ${randomNum(0,255)})`, size);
-
-    balls.push(ball);
+function getMousePos(evt) {
+    let rect = canvas.getBoundingClientRect();
+    return {
+        x: evt.clientX - rect.left,
+        y: evt.clientY - rect.top
+    };
 }
 
-let evil = new shapeEater(100, 100);
-evil.setControls();
+function checkClick(loc, btn) {
+    return loc.x >= btn.x && loc.x <= btn.x + btn.width && loc.y >= btn.y && loc.y <= btn.y + btn.height
+}
+
+let balls = [];
+let evil = Object.create(shapeEater);
+
 
 let running = false;
 
 function loop() {
     ctx.fillStyle = "orange";
-    ctx.fillRect(0, 0, width, height);
-    if (balls.length === 0) {
-        running = false;
-        let endTime = Date.now() - start;
-        drawButton(`You won!\nIt took you ${Math.floor(endTime/1000)} seconds`, width / 2, height / 3);
-    }
+    ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+
 
     for (let ball of balls) {
         if (ball.exists) {
@@ -255,22 +279,73 @@ function loop() {
     evil.update();
     evil.detectCollision();
 
-    drawMessage("Score: " + score, 64, height - 30, 20, "white");
+    if (balls.length === 0) {
+        running = false;
+        let endTime = Date.now() - start;
+        ctx.fillStyle = "orange";
+        ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+        canvas.addEventListener("click", handleClick, false);
+
+        drawButton(`You won!\nIt took you ${Math.floor(endTime/1000)} seconds`, canvasWidth / 2, canvasHeight / 3);
+        restartBtn = drawButton("Restart", canvasWidth / 2, canvasHeight / 2);
+    }
+
+    drawMessage("Score: " + score, 64, canvasHeight - 30, 20, "white");
     if (running) {
+        canvas.removeEventListener("click", handleClick, false);
         requestAnimationFrame(loop);
     }
 }
 
 let start;
+let startBtn;
+let restartBtn;
 
-canvas.addEventListener("click", function() {
-    if (running) {
-        running = false;
-    } else {
+function setupGame() {
+    ctx.fillStyle = "orange";
+    ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+    while (balls.length < 25) {
+        let radius = randomNum(10, 20);
+        let ball = new Ball(randomNum(0 + radius, canvasWidth - radius), randomNum(0 + radius, canvasHeight - radius), randomNum(-7, 7), randomNum(-7, 7), `rgb(${randomNum(0,255)}, ${randomNum(0,255)}, ${randomNum(0,255)})`, radius);
+
+        balls.push(ball);
+    }
+    for (let ball of balls) {
+        if (ball.exists) {
+            ball.draw();
+            ball.update();
+            ball.detectCollision();
+        }
+    }
+    evil.init();
+    evil.draw();
+
+    score = 0;
+    startBtn = drawButton("Start");
+}
+
+let handleClick = function(evt) {
+    if (checkClick(getMousePos(evt), startBtn)) {
         running = true;
         start = Date.now();
-        loop();
-    }
-});
+        evil.setControls();
 
-loop();
+        loop();
+    } else if (checkClick(getMousePos(evt), restartBtn)) {
+        setupGame();
+    }
+}
+
+canvas.addEventListener("click", handleClick, false);
+
+setupGame();
+
+// canvas.addEventListener("click", function() {
+//     if (running) {
+//         running = false;
+//     } else {
+//         running = true;
+//         start = Date.now();
+//         loop();
+//     }
+// });
