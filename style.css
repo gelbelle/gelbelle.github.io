@@ -1,5 +1,11 @@
 /* Style note: This document uses block-size instead of height and inline-size instead of width. This is to accommodate users that have a reading direction other than left to right and top to bottom. */
 
+
+/* ******** Erase once coding projects are populated ******** */
+#coding {
+    display: none;
+}
+
 /* ******** Universal ******** */
 html {
     box-sizing: border-box;
@@ -56,10 +62,9 @@ footer {
 body>header {
     position: sticky;
     top: 0;
-    z-index: 5;
+    z-index: 2;
     min-block-size: 50px;
     justify-content: space-between;
-
     flex-wrap: wrap;
 }
 
@@ -68,10 +73,11 @@ footer img {
     block-size: 50px;
 }
 
-h1 {
+#main-header {
     font-family: italianno, cursive;
     font-size: clamp(1rem, 7.25dvw, 2rem);
     font-weight: lighter;
+    display: inline-block;
 }
 
 /* ******** Menu ******** */
@@ -136,6 +142,13 @@ h1 {
     content: '';
     top: 12px;
 }
+
+/* nav {
+    inline-size: 100%;
+    block-size: 100%;
+    position: fixed;
+    overflow: hidden;
+} */
 
 .collapsible-menu {
     display: block;
@@ -313,7 +326,7 @@ address p {
 }
 
 /* ******** Tablet size ******** */
-@media screen and (min-width: 27rem) {
+@media screen and (min-width: 768px) {
     section {
         display: flex;
     }
@@ -323,23 +336,36 @@ address p {
         gap: .75rem;
     }
 
-    nav {
+    .collapsible-menu {
         padding-block-end: .10rem;
-        position: sticky;
-        left: 0;
+        position: relative;
+        max-block-size: none;
+        top: 0;
+        inline-size: auto;
+        right: 0;
+    }
 
+    #hamburger-menu {
+        display: flex;
+    }
+
+    .menu-button {
+        display: none;
     }
 
     #menu {
         list-style-type: none;
         display: flex;
-        justify-content: flex-end;
+        /*         justify-content: flex-end;
+ */
+        position: relative;
+        right: 0;
         padding: 0;
         padding-block-end: .5rem;
         gap: .05rem;
     }
 
-    li {
+    #menu li {
         padding: 0;
         padding-inline-start: .3rem;
     }
@@ -350,16 +376,12 @@ address p {
     }
 
     input[type="checkbox"] {
-        top: -100px;
-    }
-
-    input[type="checkbox"]:checked+nav {
-        right: 0px;
+        display: none;
     }
 
     #menu a:hover,
     #menu a:focus {
-        background-color: white;
+        background-color: var(--accent-pink);
     }
 
     label[for="menu-toggle"]:hover {
@@ -368,19 +390,15 @@ address p {
 }
 
 /* ******** Computer size ******** */
-@media screen and (min-width: 40rem) {
+/* @media screen and (min-width: 40rem) {
 
 
     nav {
         max-inline-size: 1200px;
     }
 
-    li {
-        display: inline;
-    }
-
     main {
         max-inline-size: 1200px;
         margin: auto;
     }
-}
+} */
