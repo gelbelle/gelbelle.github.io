@@ -23,7 +23,7 @@ html {
 
 :root {
     --section-color: pink;
-    --accent-gray: #333;
+    --accent-gray: #444;
     --accent-pink: #c9094a;
     --spacing-standard: .5rem;
     --rounded-standard: 7px;
@@ -69,27 +69,12 @@ body>header {
     overflow: hidden;
 }
 
-footer {
-    justify-content: space-between;
-    vertical-align: center;
-
-}
-
-#socialIcons {
-    display: inline-block;
-    right: var(--spacing-standard);
-}
-
-#githubIcon {
-    inline-size: 50px;
-    block-size: 50px;
-}
-
 #main-header {
     font-family: italianno, cursive;
-    font-size: clamp(1rem, 7.25dvw, 2rem);
+    font-size: calc(1rem + 3vw);
     font-weight: lighter;
     display: inline-block;
+    color: var(--accent-light-pink);
 }
 
 /* ******** Menu ******** */
@@ -131,7 +116,7 @@ footer {
     cursor: pointer;
     z-index: 99;
     display: inline-block;
-    vertical-align: middle;
+    vertical-align: text-bottom;
 }
 
 .menu-btn>span,
@@ -139,8 +124,8 @@ footer {
 .menu-btn>span::after {
     display: block;
     position: absolute;
-    width: 100%;
-    height: clamp(.10rem, .15dvw, .2rem);
+    inline-size: 100%;
+    block-size: calc(.1rem + .5vw);
     background-color: var(--accent-pink);
     transition-duration: .25s;
 }
@@ -187,8 +172,9 @@ ul {
 #menu a {
     background-color: var(--accent-light-pink);
     color: var(--accent-gray);
-    padding: .25rem .5rem;
+    padding: .2vw .5vw;
     text-decoration: none;
+
 }
 
 #menu a:active,
@@ -323,14 +309,35 @@ hr {
 /* ******** Footer ******** */
 footer {
     min-block-size: 2rem;
+    justify-content: space-between;
+    vertical-align: center;
 }
 
-address p {
-    color: white;
+footer p {
+    color: var(--accent-light-pink);
+}
+
+.blockSpam {
+    display: none;
+}
+
+#socialIcons {
+    display: inline-block;
+    right: var(--spacing-standard);
+}
+
+#githubIcon {
+    inline-size: 50px;
+    block-size: 50px;
 }
 
 /* ******** Tablet size ******** */
-@media screen and (min-width: 768px) {
+@media screen and (min-width: 32rem) {
+    #menu a {
+        font-size: calc(.5rem + 1vw);
+
+    }
+
     section {
         display: flex;
     }
@@ -394,8 +401,10 @@ address p {
 }
 
 /* ******** Computer size ******** */
-@media screen and (min-width: 40rem) {
-
+@media screen and (min-width: 50rem) {
+    body>header {
+        min-block-size: 100px;
+    }
 
     nav {
         max-inline-size: 1200px;
