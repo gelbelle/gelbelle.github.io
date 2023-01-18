@@ -1,6 +1,11 @@
 /* Style note: This document uses block-size instead of height and inline-size instead of width. This is to accommodate users that have a reading direction other than left to right and top to bottom. */
 
 
+/* ******** Erase once coding projects are populated ******** */
+#stillHiding {
+    display: none;
+}
+
 /* ******** Universal ******** */
 html {
     box-sizing: border-box;
