@@ -101,7 +101,6 @@ const squareRoot = (num) => {
  */
 
 const updateDisplay = (target, calculator) => {
-
     let equalsPressed = equals.classList.contains("clicked");
     if (opClicked(calculator.operators)) {
         display.value = target.innerHTML;
@@ -183,7 +182,6 @@ const calculate = (calculator, ans = 0) => {
     let num1 = Number(calculator.toCalc[0]);
     let operation = calculator.toCalc[1];
     let num2 = Number(calculator.toCalc[2]);
-
     switch (operation) {
         case "x":
             ans = multiply(num1, num2);
@@ -343,7 +341,8 @@ const main = () => {
         } else {
             if (target.classList.contains("ops")) {
                 calcSession.toCalc.push(display.value);
-                handleOperations(target, calcSession);
+                if (!calcSession.answered) handleOperations(target, calcSession);
+                else calcSession.toCalc.push(target.innerHTML);
             }
         }
 
