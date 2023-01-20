@@ -1,0 +1,91 @@
+/* Style note: This document uses block-size instead of height and inline-size instead of width. This is to accommodate users that have a reading direction other than left to right and top to bottom. */
+
+*,
+*:before,
+*:after {
+    margin: 0;
+    padding: 0;
+    font-size: 16px;
+    box-sizing: inherit;
+}
+
+:root {
+    --accent-blue: #0598ca;
+    --accent-gray: #e4e6e7;
+    --accent-pink: #fe4164;
+    --primary-color: white;
+    --standard-margin: .5rem;
+}
+
+body {
+    display: flex;
+    max-inline-size: 300px;
+    margin: 0 auto;
+}
+
+section {
+    background-color: var(--accent-pink);
+}
+
+#content,
+#content>* {
+    margin: var(--standard-margin);
+}
+
+/* #content>* {
+    margin: .5rem;
+} */
+
+#buttons {
+    margin: .3rem;
+}
+
+/* *** Todo list *** */
+#list {
+    display: flex;
+    margin-left: 1.5rem;
+}
+
+#todoList {
+    list-style-type: circle;
+
+}
+
+/* *** Add new todo *** */
+#add-todo {
+    display: none;
+}
+
+#item-to-add {
+    background-color: var(--primary-color);
+    text-align: end;
+    min-inline-size: 144px;
+    min-block-size: 3rem;
+}
+
+input {
+    color: var(--accent-blue);
+}
+
+input[type="checkbox"] {
+    display: none;
+}
+
+button {
+    background-color: var(--primary-color);
+    color: var(--accent-blue);
+    font-size: 1rem;
+    min-inline-size: 48px;
+    padding: .4rem;
+    margin: var(--standard-margin) 0
+}
+
+button:hover {
+    background-color: var(--accent-blue);
+    color: var(--primary-color);
+}
+
+.clicked {
+    background-color: var(--accent-blue);
+    color: white;
+}
