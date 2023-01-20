@@ -1,0 +1,64 @@
+*,
+*:before,
+*:after {
+    margin: 0;
+    padding: 0;
+    font-size: 16px;
+    box-sizing: inherit;
+}
+
+:root {
+    --accent-blue: #0598ca;
+    --accent-gray: #e4e6e7;
+    --accent-pink: #fe4164;
+    --primary-color: white;
+}
+
+body {
+    display: grid;
+    grid-template-columns: 1fr repeat(3, minmax(50px, 75px)) 1fr;
+}
+
+#content {
+    display: flex;
+    margin: .5rem;
+}
+
+#buttons {
+    margin: .3rem;
+}
+
+#display {
+    background-color: var(--primary-color);
+    text-align: end;
+    min-inline-size: 144px;
+    min-block-size: 3rem;
+}
+
+input {
+    color: var(--accent-blue);
+}
+
+#top {
+    inline-size: 10px;
+    block-size: 2px;
+}
+
+button {
+    background-color: var(--primary-color);
+    color: var(--accent-blue);
+    font-weight: bold;
+    font-size: 1.5rem;
+    min-inline-size: 48px;
+    padding: .4rem;
+}
+
+button:hover {
+    background-color: var(--accent-blue);
+    color: var(--primary-color);
+}
+
+.clicked {
+    background-color: var(--accent-blue);
+    color: white;
+}
