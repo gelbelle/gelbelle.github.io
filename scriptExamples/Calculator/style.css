@@ -7,6 +7,12 @@
     box-sizing: inherit;
 }
 
+root {
+    --accent-orange: #ff8c00;
+    --accent-gray: #3A414D;
+    --primary-color: white;
+}
+
 body {
     display: grid;
     grid-template-columns: 1fr repeat(3, minmax(50px, 75px)) 1fr;
@@ -26,7 +32,7 @@ section {
 }
 
 #display {
-    background-color: #3A414D;
+    background-color: --var(accent-gray);
     text-align: end;
     min-inline-size: 144px;
     min-block-size: 3rem;
@@ -37,17 +43,8 @@ section {
 
 }
 
-#answer {
-    text-align: right;
-    padding: .1rem;
-    background-color: #3A414D;
-    grid-column: 1 / 5;
-    grid-row: 3;
-
-}
-
 input {
-    color: white;
+    color: --var(primary-color);
 }
 
 #top {
@@ -56,8 +53,8 @@ input {
 }
 
 button {
-    background-color: white;
-    color: #ff8c00;
+    background-color: --var(primary-color);
+    color: --var(accent-orange);
     font-weight: bold;
     font-size: 1.5rem;
     min-inline-size: 48px;
@@ -66,12 +63,12 @@ button {
 }
 
 button:hover {
-    background-color: #ff8c00;
+    background-color: --var(accent-orange);
     color: white;
 }
 
 .clicked {
-    background-color: #FF8C00;
+    background-color: --var(accent-orange);
     color: white;
 }
 
