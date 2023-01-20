@@ -10,6 +10,7 @@
 :root {
     --accent-orange: #ff8c00;
     --accent-gray: #3A414D;
+    --accent-light-gray: gray;
     --primary-color: white;
 }
 
@@ -36,7 +37,8 @@ section {
     text-align: end;
     min-inline-size: 144px;
     min-block-size: 3rem;
-    border: none;
+    /*     border: none;
+ */
     grid-column: 1 / 5;
     padding-right: .3rem;
     margin-top: .5rem;
@@ -44,7 +46,7 @@ section {
 }
 
 input {
-    color: white;
+    color: var(--primary-color);
 }
 
 #top {
@@ -60,17 +62,21 @@ button {
     min-inline-size: 48px;
     max-inline-size: 75px;
     aspect-ratio: 1/1;
-    box-shadow: .05rem .05rem .05rem var(--accent-gray);
+    border: none;
+    border-top: .03rem solid lightgray;
+    border-left: .03rem solid lightgray;
+
+    box-shadow: .1rem .1rem .1rem var(--accent-light-gray);
 }
 
 button:hover {
     background-color: var(--accent-orange);
-    color: white;
+    color: var(--primary-color);
 }
 
 .clicked {
     background-color: var(--accent-orange);
-    color: white;
+    color: var(--primary-color);
 }
 
 #equals {
