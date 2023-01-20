@@ -17,14 +17,24 @@
 <body>
     <section id="content">
         <section id="list">
-            <ul id="todoList"></ul>
+            <ul id="todoList">
+                <li>I am a todo</li>
+                <li>So am I</li>
+            </ul>
         </section>
+        <!--Toggle add item section-->
+        <div id="toggle-add-item">
+            <input id="add-toggle" type="checkbox" />
+            <label class="add-btn" for="add-toggle">
+                <span></span>
+            </label>
+            <article id="add-todo">
+                <p>Enter new todo</p>
+                <input type="text" id="item-to-add" value="0" />
+                <button type="button" id="submit">Log todo</button>
+            </article>
+        </div>
 
-        <article id="input">
-            <p>Enter new todo</p>
-            <input type="text" id="display" value="0" />
-            <button type="button" id="submit">Log todo</button>
-        </article>
     </section>
 
 </body>

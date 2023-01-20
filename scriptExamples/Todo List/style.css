@@ -1,3 +1,5 @@
+/* Style note: This document uses block-size instead of height and inline-size instead of width. This is to accommodate users that have a reading direction other than left to right and top to bottom. */
+
 *,
 *:before,
 *:after {
@@ -12,23 +14,49 @@
     --accent-gray: #e4e6e7;
     --accent-pink: #fe4164;
     --primary-color: white;
+    --standard-margin: .5rem;
 }
 
 body {
-    display: grid;
-    grid-template-columns: 1fr repeat(3, minmax(50px, 75px)) 1fr;
+    display: flex;
+    max-inline-size: 300px;
+    margin: 0 auto;
 }
 
-#content {
-    display: flex;
-    margin: .5rem;
+section {
+    background-color: var(--accent-pink);
 }
+
+#content,
+#content>* {
+    margin: var(--standard-margin);
+}
+
+/* #content>* {
+    margin: .5rem;
+} */
 
 #buttons {
     margin: .3rem;
 }
 
-#display {
+/* *** Todo list *** */
+#list {
+    display: flex;
+    margin-left: 1.5rem;
+}
+
+#todoList {
+    list-style-type: circle;
+
+}
+
+/* *** Add new todo *** */
+#add-todo {
+    display: none;
+}
+
+#item-to-add {
     background-color: var(--primary-color);
     text-align: end;
     min-inline-size: 144px;
@@ -39,18 +67,17 @@ input {
     color: var(--accent-blue);
 }
 
-#top {
-    inline-size: 10px;
-    block-size: 2px;
+input[type="checkbox"] {
+    display: none;
 }
 
 button {
     background-color: var(--primary-color);
     color: var(--accent-blue);
-    font-weight: bold;
-    font-size: 1.5rem;
+    font-size: 1rem;
     min-inline-size: 48px;
     padding: .4rem;
+    margin: var(--standard-margin) 0
 }
 
 button:hover {
