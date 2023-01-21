@@ -83,7 +83,7 @@ const square = (num) => {
  * @return {string} - Negative square root error
  */
 const squareRoot = (num) => {
-    if (num <= 0) {
+    if (num < 0) {
         return "NEG SQ RT ERR";
     } else {
         return Math.sqrt(num);
@@ -148,7 +148,7 @@ const opClicked = (operators) => {
  */
 
 const removeTag = (tags, operators) => {
-    tags.forEach(tag => operators.forEach(op => op.classList.remove(tags)));
+    tags.forEach(tag => operators.forEach(op => op.classList.remove(tag)));
 }
 
 /**
@@ -182,6 +182,7 @@ const calculate = (calculator, ans = 0) => {
     let num1 = Number(calculator.toCalc[0]);
     let operation = calculator.toCalc[1];
     let num2 = Number(calculator.toCalc[2]);
+    console.log(calculator.toCalc);
     switch (operation) {
         case "x":
             ans = multiply(num1, num2);
@@ -201,8 +202,7 @@ const calculate = (calculator, ans = 0) => {
             break;
         case "\u221A":
             calculator.answered = true;
-            if (num1 <= 0) ans = "NEG SQRT ERROR";
-            else ans = Math.sqrt(num1);
+            ans = squareRoot(num1);
             break;
         default:
             return "ERROR";
@@ -246,6 +246,7 @@ const getOp = (calculator, ans = 0) => {
  */
 
 const handleOperations = (target, calculator) => {
+    console.log(calculator.operators);
     if (!oneOp(calculator.operators)) {
         removeTag(["current"], calculator.operators);
         let idx = calculator.toCalc.length - 2;
@@ -276,6 +277,7 @@ const handleSingleNum = (target, calcSession) => {
     calcSession.answered = true;
 
     calcSession.toCalc = [];
+
 }
 
 /**
@@ -293,15 +295,28 @@ const handleDecimal = (target, calculator) => {
  * Determines whether or not the screen has changed prior to making the final calculation and checks to see if there are three values in the toCalc array.
  * Calls getOp to perform the calculation selected by the user
  */
+/**
+ * If equals is already clicked then read last answer and the operator and second number that created that answer. Continue performing that same operation with the same second number on the current answer until a different button is clicked.
+ */
 
 const getAnswer = (calculator) => {
-    if (calculator.displayChanged) calculator.toCalc.push(display.value);
-    if (calculator.toCalc.length >= 3) display.value = getOp(calculator);
-    else return;
-    removeTag(["clicked", "current"], calculator.operators);
-    equals.classList.add("clicked");
-    calculator.toCalc = [];
-    calculator.answered = true;
+    if (equals.classList.contains("clicked")) display.value = 0;
+    else {
+        if (calculator.displayChanged) calculator.toCalc.push(display.value);
+        console.log(`Printing: ${calculator.toCalc}`);
+
+        if (calculator.toCalc.length >= 3) {
+            display.value = getOp(calculator);
+        }
+
+        calculator.displayChanged = false;
+        calculator.toCalc = [];
+        calculator.answered = true;
+
+        removeTag(["clicked", "current"], calculator.operators);
+        equals.classList.add("clicked");
+    }
+
 }
 
 /**
@@ -326,6 +341,7 @@ const main = () => {
     allBtns.addEventListener("click", (evt) => {
 
         const { target } = evt;
+        console.log(target);
         if (!target.matches("button")) return;
 
         if (target.classList.contains("number")) {
@@ -337,10 +353,15 @@ const main = () => {
         }
 
         if (target.classList.contains("single")) {
+            console.log(`${target} is a single`);
             handleSingleNum(target, calcSession);
         } else {
+            //TODO if coming from a sqr or sqrt then answered is true. Needs to handleOperations at this point
+            console.log(`${target} is not a single`);
+            console.log(calcSession.answered);
             if (target.classList.contains("ops")) {
                 calcSession.toCalc.push(display.value);
+                if (isNaN(display.value)) print(display.value);
                 if (!calcSession.answered) handleOperations(target, calcSession);
                 else calcSession.toCalc.push(target.innerHTML);
             }
@@ -350,6 +371,7 @@ const main = () => {
             handleDecimal(target, calcSession);
         }
 
+        //TODO Enable operations on answers once equals is pushed
         if (target.id === "equals") {
             getAnswer(calcSession);
         }
