@@ -260,6 +260,7 @@ const handleOperations = (target, calculator) => {
     calculator.toCalc.push(target.innerHTML);
     calculator.displayChanged = false;
     calculator.hasDecimal = false;
+    calculator.answered = false;
 }
 
 /**
@@ -269,14 +270,14 @@ const handleOperations = (target, calculator) => {
  * @param {calcSession} calculator - The instance of the current calcSession object
  */
 
-const handleSingleNum = (target, calcSession) => {
-    calcSession.toCalc.push(display.value);
-    calcSession.toCalc.push(target.innerHTML);
+const handleSingleNum = (target, calculator) => {
+    calculator.toCalc.push(display.value);
+    calculator.toCalc.push(target.innerHTML);
 
-    display.value = getOp(calcSession);
-    calcSession.answered = true;
+    display.value = getOp(calculator);
+    calculator.answered = true;
 
-    calcSession.toCalc = [];
+    calculator.toCalc = [];
 
 }
 
@@ -291,6 +292,17 @@ const handleDecimal = (target, calculator) => {
     calculator.hasDecimal = true;
 }
 
+const flagOperator = (toFind, operators) => {
+    console.log({ toFind });
+    for (let operator of operators) {
+        console.log(`Inner ${operator.innerHTML}`);
+        if (operator.innerHTML === toFind) {
+            return operator.innerHTML;
+        }
+    }
+    return "Wrong";
+}
+
 /**
  * Determines whether or not the screen has changed prior to making the final calculation and checks to see if there are three values in the toCalc array.
  * Calls getOp to perform the calculation selected by the user
@@ -299,14 +311,29 @@ const handleDecimal = (target, calculator) => {
  * If equals is already clicked then read last answer and the operator and second number that created that answer. Continue performing that same operation with the same second number on the current answer until a different button is clicked.
  */
 
+//COMPLETE Equals button is behaving correctly.
+//TODO Enable going from multiple equals to another operator
 const getAnswer = (calculator) => {
-    if (equals.classList.contains("clicked")) display.value = 0;
+    console.log(calculator.toCalc);
+    if (calculator.answered) {
+        calculator.toCalc = calculator.prevVals.map(entry => entry);
+        calculator.answered = false;
+        console.log(calculator.toCalc);
+        getAnswer(calculator);
+    }
     else {
         if (calculator.displayChanged) calculator.toCalc.push(display.value);
-        console.log(`Printing: ${calculator.toCalc}`);
+        console.log(calculator.toCalc);
 
         if (calculator.toCalc.length >= 3) {
+            console.log(calculator.toCalc[1]);
+            calculator.prevVals[1] = flagOperator(calculator.toCalc[1], calculator.operators);
+            console.log(calculator.prevVals);
+            calculator.prevVals[2] = calculator.toCalc[2];
+            console.log(calculator.toCalc);
             display.value = getOp(calculator);
+            calculator.prevVals[0] = display.value;
+
         }
 
         calculator.displayChanged = false;
@@ -331,7 +358,8 @@ const main = () => {
         displayChanged: false,
         answered: false,
         operators: document.querySelectorAll(".ops"),
-        display: document.getElementById("display")
+        display: document.getElementById("display"),
+        prevVals: []
     }
 
     const allBtns = document.getElementById("buttons");
@@ -341,27 +369,29 @@ const main = () => {
     allBtns.addEventListener("click", (evt) => {
 
         const { target } = evt;
-        console.log(target);
+        //console.log(target);
         if (!target.matches("button")) return;
 
         if (target.classList.contains("number")) {
             if (calcSession.answered) {
                 display.value = "";
-                calcSession.answered = false;
+                //calcSession.answered = false;
             }
             updateDisplay(target, calcSession);
         }
 
         if (target.classList.contains("single")) {
-            console.log(`${target} is a single`);
+
+            //console.log(`${target} is a single`);
             handleSingleNum(target, calcSession);
         } else {
-            //TODO if coming from a sqr or sqrt then answered is true. Needs to handleOperations at this point
-            console.log(`${target} is not a single`);
+            //TODO If coming from multiple equals (answered = true). Need to handle Operators at this point
+            //TODO if coming from a sqr or sqrt (answered = true). Needs to handleOperations at this point
+            //console.log(`${target} is not a single`);
             console.log(calcSession.answered);
             if (target.classList.contains("ops")) {
                 calcSession.toCalc.push(display.value);
-                if (isNaN(display.value)) print(display.value);
+                if (isNaN(display.value)) console.log(display.value);
                 if (!calcSession.answered) handleOperations(target, calcSession);
                 else calcSession.toCalc.push(target.innerHTML);
             }
@@ -371,7 +401,7 @@ const main = () => {
             handleDecimal(target, calcSession);
         }
 
-        //TODO Enable operations on answers once equals is pushed
+        //COMPLETE Enable operations on answers once equals is pushed
         if (target.id === "equals") {
             getAnswer(calcSession);
         }
