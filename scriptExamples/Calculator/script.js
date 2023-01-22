@@ -109,7 +109,10 @@ const updateDisplay = (target, calculator) => {
         display.value = (display.value === "0" || equalsPressed) ? target.innerHTML : display.value + target.innerHTML;
         equals.classList.remove("clicked");
     }
-    calculator.displayChanged = true;
+    calculator.prevDisplay = display.value;
+    calculator.displayChanged = calculator.prevDisplay === display.value;
+
+    console.log(`Update display: ${calculator.prevDisplay, calculator.displayChanged}`);
 }
 
 /**
@@ -182,7 +185,6 @@ const calculate = (calculator, ans = 0) => {
     let num1 = Number(calculator.toCalc[0]);
     let operation = calculator.toCalc[1];
     let num2 = Number(calculator.toCalc[2]);
-    console.log(calculator.toCalc);
     switch (operation) {
         case "x":
             ans = multiply(num1, num2);
@@ -205,7 +207,7 @@ const calculate = (calculator, ans = 0) => {
             ans = squareRoot(num1);
             break;
         default:
-            return "ERROR";
+            return `ERROR ${calculator.toCalc[1]}`;
     }
     return ans;
 }
@@ -223,6 +225,8 @@ const calculate = (calculator, ans = 0) => {
  */
 
 const getOp = (calculator, ans = 0) => {
+    console.log({ calculator, ans });
+    console.log(calculator.toCalc, calculator.toCalc.length);
     if (calculator.toCalc.length >= 2) {
         ans = calculate(calculator, ans);
         calculator.toCalc.splice(0, 3)
@@ -246,7 +250,6 @@ const getOp = (calculator, ans = 0) => {
  */
 
 const handleOperations = (target, calculator) => {
-    console.log(calculator.operators);
     if (!oneOp(calculator.operators)) {
         removeTag(["current"], calculator.operators);
         let idx = calculator.toCalc.length - 2;
@@ -293,9 +296,7 @@ const handleDecimal = (target, calculator) => {
 }
 
 const flagOperator = (toFind, operators) => {
-    console.log({ toFind });
     for (let operator of operators) {
-        console.log(`Inner ${operator.innerHTML}`);
         if (operator.innerHTML === toFind) {
             return operator.innerHTML;
         }
@@ -314,29 +315,38 @@ const flagOperator = (toFind, operators) => {
 //COMPLETE Equals button is behaving correctly.
 //TODO Enable going from multiple equals to another operator
 const getAnswer = (calculator) => {
+    console.log(calculator.prevDisplay, display.value, calculator.displayChanged, calculator.answered);
+    if (calculator.prevDisplay != display.value) {
+        console.log("Changing display");
+        calculator.displayChanged = true;
+    } /* else {
+        calculator.displayChanged = false;
+    } */
+    console.log(`Display changed: ${calculator.displayChanged}`);
+    calculator.prevDisplay = display.value;
+    console.log(`After change: ${calculator.prevDisplay} ${display.value}`);
     console.log(calculator.toCalc);
     if (calculator.answered) {
         calculator.toCalc = calculator.prevVals.map(entry => entry);
+        console.log(`Answered ${calculator.toCalc}`);
         calculator.answered = false;
-        console.log(calculator.toCalc);
+        console.log(`Getting answer ${calculator.toCalc}`);
+        console.log(calculator);
         getAnswer(calculator);
-    }
-    else {
+    } else {
         if (calculator.displayChanged) calculator.toCalc.push(display.value);
         console.log(calculator.toCalc);
-
         if (calculator.toCalc.length >= 3) {
-            console.log(calculator.toCalc[1]);
             calculator.prevVals[1] = flagOperator(calculator.toCalc[1], calculator.operators);
-            console.log(calculator.prevVals);
             calculator.prevVals[2] = calculator.toCalc[2];
-            console.log(calculator.toCalc);
             display.value = getOp(calculator);
             calculator.prevVals[0] = display.value;
+            calculator.prevDisplay = display.value;
 
         }
-
-        calculator.displayChanged = false;
+        //calculator.prevDisplay = display.value;
+        console.log(`Below ${calculator.prevDisplay}`);
+        calculator.displayChanged = calculator.prevDisplay === display.value;
         calculator.toCalc = [];
         calculator.answered = true;
 
@@ -359,7 +369,8 @@ const main = () => {
         answered: false,
         operators: document.querySelectorAll(".ops"),
         display: document.getElementById("display"),
-        prevVals: []
+        prevVals: [],
+        prevDisplay: 0
     }
 
     const allBtns = document.getElementById("buttons");
@@ -369,7 +380,7 @@ const main = () => {
     allBtns.addEventListener("click", (evt) => {
 
         const { target } = evt;
-        //console.log(target);
+        console.log(calcSession.prevDisplay);
         if (!target.matches("button")) return;
 
         if (target.classList.contains("number")) {
@@ -387,9 +398,8 @@ const main = () => {
         } else {
             //TODO If coming from multiple equals (answered = true). Need to handle Operators at this point
             //TODO if coming from a sqr or sqrt (answered = true). Needs to handleOperations at this point
-            //console.log(`${target} is not a single`);
-            console.log(calcSession.answered);
             if (target.classList.contains("ops")) {
+                console.log(`In main ${calcSession.prevDisplay, display.value}`);
                 calcSession.toCalc.push(display.value);
                 if (isNaN(display.value)) console.log(display.value);
                 if (!calcSession.answered) handleOperations(target, calcSession);
