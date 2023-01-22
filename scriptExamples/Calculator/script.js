@@ -112,12 +112,13 @@ const updateDisplay = (target, calculator) => {
  * @param {char[]} operators - An array containing all the operators of the functions the calculator performs
  */
 
-const resetCalc = (operators) => {
+const resetCalc = (operators, calculator) => {
     display.value = "0";
     equals.classList.remove(["clicked"]);
     operators.forEach(op => {
         op.classList.remove(["clicked"]);
     });
+    calculator.answered = false;
 }
 
 /**
@@ -188,11 +189,9 @@ const calculate = (calculator, ans = 0) => {
             ans = subtract(num1, num2);
             break;
         case "X<sup>2</sup>":
-            calculator.answered = true;
             ans = square(num1);
             break;
         case "\u221A":
-            calculator.answered = true;
             ans = squareRoot(num1);
             break;
         default:
@@ -206,7 +205,7 @@ const calculate = (calculator, ans = 0) => {
  * If true - calculate is called and the answer returned, the previously used values are removed from the array, to new answer is added to the beginning of the array, and then getOp is called recursively
  * If false - The answer is returned
  * 
-  * @param {calcSession} calculator - The instance of the current calcSession object
+ * @param {calcSession} calculator - The instance of the current calcSession object
  * @param {int} ans - Defaults to 0 if a current total is not provided when calculate is called
  * 
  * @return {int} - The answer requested
@@ -214,6 +213,7 @@ const calculate = (calculator, ans = 0) => {
  */
 
 const getOp = (calculator, ans = 0) => {
+    console.log(calculator.toCalc);
     if (calculator.toCalc.length >= 2) {
         ans = calculate(calculator, ans);
         calculator.toCalc.splice(0, 3)
@@ -247,9 +247,12 @@ const handleOperations = (target, calculator) => {
  * @param {calcSession} calculator - The instance of the current calcSession object
  */
 
-const handleSingleNum = (target, calculator) => {
-
-
+const handleSingle = (operator, calculator) => {
+    calculator.toCalc = [];
+    calculator.toCalc.push(Number(calculator.display.value));
+    calculator.toCalc.push(operator);
+    calculator.display.value = getOp(calculator);
+    calculator.answered = true;
 }
 
 /**
@@ -257,7 +260,11 @@ const handleSingleNum = (target, calculator) => {
  * Sets hasDecimal to true;
  */
 const handleDecimal = (target, calculator) => {
-
+    if (!calculator.answered) {
+        if (!calculator.display.value.includes(target)) {
+            display.value = (display.value === "0") ? "0." : display.value + ".";
+        }
+    }
 }
 
 const flagOperator = (toFind, operators) => {
@@ -272,12 +279,18 @@ const flagOperator = (toFind, operators) => {
  * If equals is already clicked then read last answer and the operator and second number that created that answer. Continue performing that same operation with the same second number on the current answer until a different button is clicked.
  */
 
-//COMPLETE Equals button is behaving correctly.
-//TODO Enable going from multiple equals to another operator
 const getAnswer = (calculator) => {
 
 
 
+}
+
+const handleNumber = (num, calculator) => {
+    if (!calculator.answered) {
+        calculator.display.value = (calculator.display.value === "0") ? num : calculator.display.value + num;
+    } else {
+        calculator.display.value = num;
+    }
 }
 
 /**
@@ -288,6 +301,7 @@ const getAnswer = (calculator) => {
 const main = () => {
     let calcSession = {
         toCalc: [],
+        answered: false,
         operators: document.querySelectorAll(".ops"),
         display: document.getElementById("display"),
         prevVals: [],
@@ -296,7 +310,7 @@ const main = () => {
 
     const allBtns = document.getElementById("buttons");
 
-    resetCalc(calcSession.operators);
+    resetCalc(calcSession.operators, calcSession);
 
     allBtns.addEventListener("click", (evt) => {
 
@@ -304,21 +318,22 @@ const main = () => {
         if (!target.matches("button")) return;
 
         if (target.classList.contains("number")) {
-
+            handleNumber(Number(target.innerHTML), calcSession);
         }
 
         if (target.classList.contains("single")) {
-
+            handleSingle(target.innerHTML, calcSession);
         }
 
         if (target.innerHTML === ".") {
+            handleDecimal(target.innerHTML, calcSession);
         }
 
         //COMPLETE Enable operations on answers once equals is pushed
         if (target.id === "equals") {
         }
 
-        if (target.id === "clear") resetCalc(calcSession.operators);
+        if (target.id === "clear") resetCalc(calcSession.operators, calcSession);
     });
 }
 
