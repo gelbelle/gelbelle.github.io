@@ -101,18 +101,7 @@ const squareRoot = (num) => {
  */
 
 const updateDisplay = (target, calculator) => {
-    let equalsPressed = equals.classList.contains("clicked");
-    if (opClicked(calculator.operators)) {
-        display.value = target.innerHTML;
-        removeTag(["clicked"], calculator.operators);
-    } else {
-        display.value = (display.value === "0" || equalsPressed) ? target.innerHTML : display.value + target.innerHTML;
-        equals.classList.remove("clicked");
-    }
-    calculator.prevDisplay = display.value;
-    calculator.displayChanged = calculator.prevDisplay === display.value;
 
-    console.log(`Update display: ${calculator.prevDisplay, calculator.displayChanged}`);
 }
 
 /**
@@ -225,8 +214,6 @@ const calculate = (calculator, ans = 0) => {
  */
 
 const getOp = (calculator, ans = 0) => {
-    console.log({ calculator, ans });
-    console.log(calculator.toCalc, calculator.toCalc.length);
     if (calculator.toCalc.length >= 2) {
         ans = calculate(calculator, ans);
         calculator.toCalc.splice(0, 3)
@@ -250,20 +237,7 @@ const getOp = (calculator, ans = 0) => {
  */
 
 const handleOperations = (target, calculator) => {
-    if (!oneOp(calculator.operators)) {
-        removeTag(["current"], calculator.operators);
-        let idx = calculator.toCalc.length - 2;
-        calculator.toCalc.splice(idx);
-    };
-    target.classList.add("current");
 
-    if (opClicked(calculator.operators)) removeTag(["clicked"]);
-
-    target.classList.add("clicked");
-    calculator.toCalc.push(target.innerHTML);
-    calculator.displayChanged = false;
-    calculator.hasDecimal = false;
-    calculator.answered = false;
 }
 
 /**
@@ -274,13 +248,7 @@ const handleOperations = (target, calculator) => {
  */
 
 const handleSingleNum = (target, calculator) => {
-    calculator.toCalc.push(display.value);
-    calculator.toCalc.push(target.innerHTML);
 
-    display.value = getOp(calculator);
-    calculator.answered = true;
-
-    calculator.toCalc = [];
 
 }
 
@@ -289,19 +257,11 @@ const handleSingleNum = (target, calculator) => {
  * Sets hasDecimal to true;
  */
 const handleDecimal = (target, calculator) => {
-    if (!display.value.includes(target.innerHTML)) {
-        display.value = (display.value === "0") ? "0." : display.value + target.innerHTML
-    }
-    calculator.hasDecimal = true;
+
 }
 
 const flagOperator = (toFind, operators) => {
-    for (let operator of operators) {
-        if (operator.innerHTML === toFind) {
-            return operator.innerHTML;
-        }
-    }
-    return "Wrong";
+
 }
 
 /**
@@ -315,44 +275,8 @@ const flagOperator = (toFind, operators) => {
 //COMPLETE Equals button is behaving correctly.
 //TODO Enable going from multiple equals to another operator
 const getAnswer = (calculator) => {
-    console.log(calculator.prevDisplay, display.value, calculator.displayChanged, calculator.answered);
-    if (calculator.prevDisplay != display.value) {
-        console.log("Changing display");
-        calculator.displayChanged = true;
-    } /* else {
-        calculator.displayChanged = false;
-    } */
-    console.log(`Display changed: ${calculator.displayChanged}`);
-    calculator.prevDisplay = display.value;
-    console.log(`After change: ${calculator.prevDisplay} ${display.value}`);
-    console.log(calculator.toCalc);
-    if (calculator.answered) {
-        calculator.toCalc = calculator.prevVals.map(entry => entry);
-        console.log(`Answered ${calculator.toCalc}`);
-        calculator.answered = false;
-        console.log(`Getting answer ${calculator.toCalc}`);
-        console.log(calculator);
-        getAnswer(calculator);
-    } else {
-        if (calculator.displayChanged) calculator.toCalc.push(display.value);
-        console.log(calculator.toCalc);
-        if (calculator.toCalc.length >= 3) {
-            calculator.prevVals[1] = flagOperator(calculator.toCalc[1], calculator.operators);
-            calculator.prevVals[2] = calculator.toCalc[2];
-            display.value = getOp(calculator);
-            calculator.prevVals[0] = display.value;
-            calculator.prevDisplay = display.value;
 
-        }
-        //calculator.prevDisplay = display.value;
-        console.log(`Below ${calculator.prevDisplay}`);
-        calculator.displayChanged = calculator.prevDisplay === display.value;
-        calculator.toCalc = [];
-        calculator.answered = true;
 
-        removeTag(["clicked", "current"], calculator.operators);
-        equals.classList.add("clicked");
-    }
 
 }
 
@@ -364,9 +288,6 @@ const getAnswer = (calculator) => {
 const main = () => {
     let calcSession = {
         toCalc: [],
-        hasDecimal: false,
-        displayChanged: false,
-        answered: false,
         operators: document.querySelectorAll(".ops"),
         display: document.getElementById("display"),
         prevVals: [],
@@ -380,40 +301,21 @@ const main = () => {
     allBtns.addEventListener("click", (evt) => {
 
         const { target } = evt;
-        console.log(calcSession.prevDisplay);
         if (!target.matches("button")) return;
 
         if (target.classList.contains("number")) {
-            if (calcSession.answered) {
-                display.value = "";
-                //calcSession.answered = false;
-            }
-            updateDisplay(target, calcSession);
+
         }
 
         if (target.classList.contains("single")) {
 
-            //console.log(`${target} is a single`);
-            handleSingleNum(target, calcSession);
-        } else {
-            //TODO If coming from multiple equals (answered = true). Need to handle Operators at this point
-            //TODO if coming from a sqr or sqrt (answered = true). Needs to handleOperations at this point
-            if (target.classList.contains("ops")) {
-                console.log(`In main ${calcSession.prevDisplay, display.value}`);
-                calcSession.toCalc.push(display.value);
-                if (isNaN(display.value)) console.log(display.value);
-                if (!calcSession.answered) handleOperations(target, calcSession);
-                else calcSession.toCalc.push(target.innerHTML);
-            }
         }
 
         if (target.innerHTML === ".") {
-            handleDecimal(target, calcSession);
         }
 
         //COMPLETE Enable operations on answers once equals is pushed
         if (target.id === "equals") {
-            getAnswer(calcSession);
         }
 
         if (target.id === "clear") resetCalc(calcSession.operators);
