@@ -247,6 +247,7 @@ const handleOperations = (target, calculator) => {
     calculator.toCalc.push(calculator.display.value);
     calculator.toCalc.push(target.innerHTML);
     console.log(calculator);
+    calculator.answered = false;
 }
 
 /**
@@ -289,10 +290,30 @@ const flagOperator = (toFind, operators) => {
  * If equals is already clicked then read last answer and the operator and second number that created that answer. Continue performing that same operation with the same second number on the current answer until a different button is clicked.
  */
 
+//TODO After adding if answered NaN being returned and previous answer not being added to either array
 const getAnswer = (calculator) => {
-    calculator.toCalc.push(calculator.display.value);
-    console.log(calculator.toCalc);
-    return getOp(calculator);
+    if (calculator.answered) {
+        calculator.toCalc = calculator.prevVals.map(val => val);
+        calculator.toCalc[0] = calculator.display.value;
+    } else {
+        calculator.prevVals = [];
+    }
+    calculator.toCalc[0] = (calculator.display.value);
+
+    //Add the operator and the current number to prevVals to repeat operation on successive answers
+    calculator.prevVals[1] = (calculator.toCalc[1]);
+    calculator.prevVals[2] = (calculator.display.value)
+    console.log({ calculator });
+
+
+    let ans = getOp(calculator);
+    calculator.prevVals[0] = ans;
+    //console.log(calculator.prevVals);
+    calculator.toCalc = calculator.prevVals.map(val => val);
+    calculator.displayChanged = true;
+    console.log({ calculator });
+    calculator.answered = true;
+    return ans;
 }
 
 const handleNumber = (num, calculator) => {
