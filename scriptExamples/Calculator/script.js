@@ -242,6 +242,8 @@ const handleOperations = (target, calculator) => {
     //TODO watch to see if this breaks operators or not, could solve the changing operator problem easily
     removeTag(["clicked", "current"], calculator.operators);
     target.classList.add("clicked", "current");
+    calculator.displayChanged = false;
+    calculator.answered = false;
     calculator.toCalc.push(calculator.display.value);
     calculator.toCalc.push(target.innerHTML);
     console.log(calculator);
@@ -290,18 +292,23 @@ const flagOperator = (toFind, operators) => {
 const getAnswer = (calculator) => {
     calculator.toCalc.push(calculator.display.value);
     console.log(calculator.toCalc);
-
+    return getOp(calculator);
 }
 
 const handleNumber = (num, calculator) => {
-    if (!calculator.answered) {
-        if (calculator.display.value === "0") {
+    if (!opClicked(calculator.operators)) {
+        if (!calculator.answered) {
+            if (calculator.display.value === "0") {
+                calculator.prevDisplay = calculator.display.value;
+                return num;
+            } else return calculator.display.value + num;
+        } else {
+            calculator.answered = false;
             calculator.prevDisplay = calculator.display.value;
             return num;
-        } else return calculator.display.value + num;
+        }
     } else {
-        calculator.answered = false;
-        calculator.prevDisplay = calculator.display.value;
+        removeTag(["clicked"], calculator.operators);
         return num;
     }
 }
