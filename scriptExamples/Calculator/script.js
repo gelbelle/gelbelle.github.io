@@ -119,6 +119,8 @@ const resetCalc = (operators, calculator) => {
         op.classList.remove(["clicked"]);
     });
     calculator.answered = false;
+    calculator.prevDisplay = 0;
+    calculator.displayChanged = false;
 }
 
 /**
@@ -195,7 +197,7 @@ const calculate = (calculator, ans = 0) => {
             ans = squareRoot(num1);
             break;
         default:
-            return `ERROR ${calculator.toCalc[1]}`;
+            return `ERROR ${calculator.toCalc}`;
     }
     return ans;
 }
@@ -237,7 +239,12 @@ const getOp = (calculator, ans = 0) => {
  */
 
 const handleOperations = (target, calculator) => {
-
+    //TODO watch to see if this breaks operators or not, could solve the changing operator problem easily
+    removeTag(["clicked", "current"], calculator.operators);
+    target.classList.add("clicked", "current");
+    calculator.toCalc.push(calculator.display.value);
+    calculator.toCalc.push(target.innerHTML);
+    console.log(calculator);
 }
 
 /**
@@ -251,8 +258,9 @@ const handleSingle = (operator, calculator) => {
     calculator.toCalc = [];
     calculator.toCalc.push(Number(calculator.display.value));
     calculator.toCalc.push(operator);
-    calculator.display.value = getOp(calculator);
     calculator.answered = true;
+    return getOp(calculator);
+
 }
 
 /**
@@ -262,7 +270,7 @@ const handleSingle = (operator, calculator) => {
 const handleDecimal = (target, calculator) => {
     if (!calculator.answered) {
         if (!calculator.display.value.includes(target)) {
-            display.value = (display.value === "0") ? "0." : display.value + ".";
+            return (calculator.display.value === "0") ? "0." : calculator.display.value + ".";
         }
     }
 }
@@ -280,16 +288,21 @@ const flagOperator = (toFind, operators) => {
  */
 
 const getAnswer = (calculator) => {
-
-
+    calculator.toCalc.push(calculator.display.value);
+    console.log(calculator.toCalc);
 
 }
 
 const handleNumber = (num, calculator) => {
     if (!calculator.answered) {
-        calculator.display.value = (calculator.display.value === "0") ? num : calculator.display.value + num;
+        if (calculator.display.value === "0") {
+            calculator.prevDisplay = calculator.display.value;
+            return num;
+        } else return calculator.display.value + num;
     } else {
-        calculator.display.value = num;
+        calculator.answered = false;
+        calculator.prevDisplay = calculator.display.value;
+        return num;
     }
 }
 
@@ -305,7 +318,8 @@ const main = () => {
         operators: document.querySelectorAll(".ops"),
         display: document.getElementById("display"),
         prevVals: [],
-        prevDisplay: 0
+        prevDisplay: 0,
+        displayChanged: false
     }
 
     const allBtns = document.getElementById("buttons");
@@ -313,24 +327,33 @@ const main = () => {
     resetCalc(calcSession.operators, calcSession);
 
     allBtns.addEventListener("click", (evt) => {
-
+        console.log(calcSession);
         const { target } = evt;
         if (!target.matches("button")) return;
 
         if (target.classList.contains("number")) {
-            handleNumber(Number(target.innerHTML), calcSession);
+            calcSession.display.value = handleNumber(Number(target.innerHTML), calcSession);
+            calcSession.displayChanged = true;
+        }
+
+        if (target.classList.contains("ops") && !target.classList.contains("single")) {
+            handleOperations(target, calcSession);
+            console.log(target);
         }
 
         if (target.classList.contains("single")) {
-            handleSingle(target.innerHTML, calcSession);
+            calcSession.display.value = handleSingle(target.innerHTML, calcSession);
+            calcSession.displayChanged = true;
         }
 
         if (target.innerHTML === ".") {
-            handleDecimal(target.innerHTML, calcSession);
+            calcSession.display.value = handleDecimal(target.innerHTML, calcSession);
+            calcSession.displayChanged = false;
         }
 
         //COMPLETE Enable operations on answers once equals is pushed
         if (target.id === "equals") {
+            calcSession.display.value = getAnswer(calcSession);
         }
 
         if (target.id === "clear") resetCalc(calcSession.operators, calcSession);
