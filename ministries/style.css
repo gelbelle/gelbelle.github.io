@@ -1,6 +1,6 @@
 * {
     font-family: raleway, Verdana, sans-serif;
-    display: grid;
+    display: flex;
 }
 
 article {
