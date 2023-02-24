@@ -1,5 +1,8 @@
 * {
     font-family: raleway, Verdana, sans-serif;
+}
+
+body {
     display: flex;
 }
 
