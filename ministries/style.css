@@ -2,10 +2,6 @@
     font-family: raleway, Verdana, sans-serif;
 }
 
-body {
-    display: flex;
-}
-
 article {
     border-bottom: 1px solid black;
     padding: 10px;
