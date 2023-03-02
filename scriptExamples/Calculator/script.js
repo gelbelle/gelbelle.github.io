@@ -101,7 +101,7 @@ const squareRoot = (num) => {
  */
 
 const updateDisplay = (target, calculator) => {
-
+    console.log("Content to be added")
 }
 
 /**
@@ -121,6 +121,8 @@ const resetCalc = (operators, calculator) => {
     calculator.answered = false;
     calculator.prevDisplay = 0;
     calculator.displayChanged = false;
+    calculator.prevVals = [];
+    calculator.toCalc = [];
 }
 
 /**
@@ -204,7 +206,7 @@ const calculate = (calculator, ans = 0) => {
 
 /**
  * Checks to see if there are enough values in the toCalc list of the calculator to perform another complete operation.
- * If true - calculate is called and the answer returned, the previously used values are removed from the array, to new answer is added to the beginning of the array, and then getOp is called recursively
+ * If true - calculate is called and the answer returned, the previously used values are removed from the array, the new answer is added to the beginning of the array, and then getOp is called recursively
  * If false - The answer is returned
  * 
  * @param {calcSession} calculator - The instance of the current calcSession object
@@ -247,8 +249,8 @@ const handleOperations = (target, calculator) => {
     calculator.toCalc.push(calculator.display.value);
     calculator.toCalc.push(target.innerHTML);
     console.log(calculator);
-    calculator.answered = false;
-}
+/*     calculator.answered = false;
+ */}
 
 /**
  * Deals with square root and squaring function, functions that only require a single number.
@@ -279,7 +281,7 @@ const handleDecimal = (target, calculator) => {
 }
 
 const flagOperator = (toFind, operators) => {
-
+    console.log("Content to be added")
 }
 
 /**
@@ -293,23 +295,24 @@ const flagOperator = (toFind, operators) => {
 //TODO After adding if answered NaN being returned and previous answer not being added to either array
 const getAnswer = (calculator) => {
     if (calculator.answered) {
-        calculator.toCalc = calculator.prevVals.map(val => val);
+        //calculator.toCalc = calculator.prevVals.map(val => val);
         calculator.toCalc[0] = calculator.display.value;
     } else {
         calculator.prevVals = [];
+
+        calculator.toCalc.push(calculator.display.value);
+
+        //Add the operator and the current number to prevVals to repeat operation on successive answers
+        calculator.prevVals[1] = (calculator.toCalc[1]);
+        calculator.prevVals[2] = (calculator.display.value)
+        console.log({ calculator });
     }
-    calculator.toCalc[0] = (calculator.display.value);
-
-    //Add the operator and the current number to prevVals to repeat operation on successive answers
-    calculator.prevVals[1] = (calculator.toCalc[1]);
-    calculator.prevVals[2] = (calculator.display.value)
-    console.log({ calculator });
-
 
     let ans = getOp(calculator);
     calculator.prevVals[0] = ans;
-    //console.log(calculator.prevVals);
+    console.log(calculator.prevVals);
     calculator.toCalc = calculator.prevVals.map(val => val);
+    console.log(calculator.toCalc);
     calculator.displayChanged = true;
     console.log({ calculator });
     calculator.answered = true;
