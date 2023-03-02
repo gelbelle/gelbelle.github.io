@@ -123,10 +123,10 @@ const resetCalc = (operators, calculator) => {
     calculator.displayChanged = false;
     calculator.prevVals = [];
     calculator.toCalc = [];
+    calculator.hasSingle = false;
 }
 
-/**
- * Determines whether or not any of the operators have been clicked
+/** Determines whether or not any of the operators have been clicked
  * 
  * @param {char[]} operators - An array containing all the operators of the functions the calculator performs
  * 
@@ -137,8 +137,7 @@ const opClicked = (operators) => {
     return [...operators].filter(op => op.classList.contains("clicked")).length > 0;
 }
 
-/**
- * Removes the provided tags from all operators
+/** Removes the provided tags from all operators
  * 
  * @param {str[]} tags - An array containing all tags to be removed from the classlists of the operators
  * @param {char[]} operators - An array containing all the operators of the functions the calculator performs
@@ -148,8 +147,7 @@ const removeTag = (tags, operators) => {
     tags.forEach(tag => operators.forEach(op => op.classList.remove(tag)));
 }
 
-/**
- * Determines whether or not a single operator is selected
+/** Determines whether or not a single operator is selected
  * 
  * @param {char[]} operators - An array containing all the operators of the functions the calculator performs
  * 
@@ -165,8 +163,7 @@ const oneOp = (operators) => {
     return numOps === 0;
 }
 
-/**
- * Performs the actual calculations determined by the user
+/** Performs the actual calculations determined by the user
  * 
  * @param {calcSession} calculator - The instance of the current calcSession object
  * @param {int} ans - Defaults to 0 if a current total is not provided when calculate is called
@@ -204,8 +201,7 @@ const calculate = (calculator, ans = 0) => {
     return ans;
 }
 
-/**
- * Checks to see if there are enough values in the toCalc list of the calculator to perform another complete operation.
+/** Checks to see if there are enough values in the toCalc list of the calculator to perform another complete operation.
  * If true - calculate is called and the answer returned, the previously used values are removed from the array, the new answer is added to the beginning of the array, and then getOp is called recursively
  * If false - The answer is returned
  * 
@@ -218,17 +214,25 @@ const calculate = (calculator, ans = 0) => {
 
 const getOp = (calculator, ans = 0) => {
     console.log(calculator.toCalc);
-    if (calculator.toCalc.length >= 2) {
+    if (calculator.toCalc.length >= 3) {
         ans = calculate(calculator, ans);
         calculator.toCalc.splice(0, 3)
-        calculator.toCalc.unshift(ans);
+        calculator.toCalc[0] = ans;
         ans = getOp(calculator, ans);
+    } else if (calculator.toCalc.length === 2) {
+        console.log(`Equals 2: ${calculator.toCalc}`);
+
+        ans = calculate(calculator, ans);
+        //calculator.toCalc = [];
+        calculator.toCalc[0] = ans;
     }
+    console.log(calculator.toCalc);
+
     return ans;
 }
 
-/**
- * Determines if only a single operator has been selected to account for users changing their minds on the operation they want to perform
+//TODO Fix function description
+/** Determines if only a single operator has been selected to account for users changing their minds on the operation they want to perform
  * False - Removes the "current" tag from the classList of the selected operator and removes the previously selected operator from the toCalc array.
  * True - Adds current to the currently selected operator
  * True - If there is an operator tagged "clicked" it removes this tag from it
@@ -240,8 +244,10 @@ const getOp = (calculator, ans = 0) => {
  * @param {calcSession} calculator - The instance of the current calcSession object
  */
 
+//TODO Breaks when operator is changed because it's adding the new operator and the screen value to the current toCalc list. This is what it should do if it's the first time an operator has been clicked, but if it's more than that then it should just change the operator at position 1.
 const handleOperations = (target, calculator) => {
-    //TODO watch to see if this breaks operators or not, could solve the changing operator problem easily
+    //COMPLETE watch to see if this breaks operators or not, could solve the changing operator problem easily
+    calculator.prevDisplay = calculator.display.value;
     removeTag(["clicked", "current"], calculator.operators);
     target.classList.add("clicked", "current");
     calculator.displayChanged = false;
@@ -249,11 +255,9 @@ const handleOperations = (target, calculator) => {
     calculator.toCalc.push(calculator.display.value);
     calculator.toCalc.push(target.innerHTML);
     console.log(calculator);
-/*     calculator.answered = false;
- */}
+}
 
-/**
- * Deals with square root and squaring function, functions that only require a single number.
+/** Deals with square root and squaring function, functions that only require a single number.
  * 
  * @param {btn} target - The current button that has been clicked as an object
  * @param {calcSession} calculator - The instance of the current calcSession object
@@ -261,22 +265,33 @@ const handleOperations = (target, calculator) => {
 
 const handleSingle = (operator, calculator) => {
     calculator.toCalc = [];
-    calculator.toCalc.push(Number(calculator.display.value));
-    calculator.toCalc.push(operator);
+    console.log(`Single ${calculator.toCalc}`);
+    calculator.toCalc[0] = Number(calculator.display.value);
+    calculator.toCalc[1] = operator;
     calculator.answered = true;
+    calculator.displayChanged = true;
     return getOp(calculator);
-
 }
 
-/**
- * Determines if there is already a decimal on the screen and does not allow a second decimal to be added
+/** Determines if there is already a decimal on the screen and does not allow a second decimal to be added
  * Sets hasDecimal to true;
  */
 const handleDecimal = (target, calculator) => {
+    console.log(calculator.displayChanged);
     if (!calculator.answered) {
         if (!calculator.display.value.includes(target)) {
-            return (calculator.display.value === "0") ? "0." : calculator.display.value + ".";
+            if (calculator.displayChanged) {
+                console.log(`If changed ${calculator.displayChanged}`);
+                return (calculator.display.value === "0") ? "0." : calculator.display.value + ".";
+            } else {
+                console.log(`Display not changed: ${calculator.displayChanged}`);
+                calculator.displayChanged = true;
+                return "0."
+            }
         }
+    } else {
+        console.log(`Answered ${calculator.displayChanged}`);
+        return "0."
     }
 }
 
@@ -284,18 +299,19 @@ const flagOperator = (toFind, operators) => {
     console.log("Content to be added")
 }
 
-/**
- * Determines whether or not the screen has changed prior to making the final calculation and checks to see if there are three values in the toCalc array.
+//TODO Fix function description
+/** Determines whether or not the screen has changed prior to making the final calculation and checks to see if there are three values in the toCalc array.
  * Calls getOp to perform the calculation selected by the user
- */
-/**
  * If equals is already clicked then read last answer and the operator and second number that created that answer. Continue performing that same operation with the same second number on the current answer until a different button is clicked.
  */
 
-//TODO After adding if answered NaN being returned and previous answer not being added to either array
 const getAnswer = (calculator) => {
     if (calculator.answered) {
-        //calculator.toCalc = calculator.prevVals.map(val => val);
+        console.log(calculator.toCalc);
+        if (calculator.hasSingle) {
+            console.log("Found square");
+            return calculator.display.value;
+        }
         calculator.toCalc[0] = calculator.display.value;
     } else {
         calculator.prevVals = [];
@@ -319,6 +335,7 @@ const getAnswer = (calculator) => {
     return ans;
 }
 
+//TODO Fix function description
 const handleNumber = (num, calculator) => {
     if (!opClicked(calculator.operators)) {
         if (!calculator.answered) {
@@ -329,16 +346,20 @@ const handleNumber = (num, calculator) => {
         } else {
             calculator.answered = false;
             calculator.prevDisplay = calculator.display.value;
-            return num;
+            return calculator.display.value;
         }
     } else {
         removeTag(["clicked"], calculator.operators);
-        return num;
+        console.log(calculator);
+        if (calculator.display.value == calculator.prevDisplay) {
+            return num;
+        } else if (calculator.display.value.includes(".")) {
+            return calculator.display.value + num;
+        } else return num;
     }
 }
 
-/**
- * Creates the current calcSession, opulates an array containing all the button objects of the calculator
+/** Creates the current calcSession, opulates an array containing all the button objects of the calculator
  * Dynamically processes the buttons clicked by the user by adding the "click" eventlistener and calling the appropriate functions based on which button was selected.
  */
 
@@ -350,7 +371,8 @@ const main = () => {
         display: document.getElementById("display"),
         prevVals: [],
         prevDisplay: 0,
-        displayChanged: false
+        displayChanged: false,
+        hasSingle: false
     }
 
     const allBtns = document.getElementById("buttons");
@@ -367,19 +389,22 @@ const main = () => {
             calcSession.displayChanged = true;
         }
 
-        if (target.classList.contains("ops") && !target.classList.contains("single")) {
+        if (target.classList.contains("single")) {
+            console.log("Single")
+            calcSession.display.value = handleSingle(target.innerHTML, calcSession);
+            calcSession.displayChanged = true;
+            calcSession.hasSingle = true;
+            removeTag(["clicked"], calcSession.operators)
+        } else if (target.classList.contains("ops")) {
             handleOperations(target, calcSession);
             console.log(target);
         }
 
-        if (target.classList.contains("single")) {
-            calcSession.display.value = handleSingle(target.innerHTML, calcSession);
-            calcSession.displayChanged = true;
-        }
-
         if (target.innerHTML === ".") {
+            console.log(calcSession);
             calcSession.display.value = handleDecimal(target.innerHTML, calcSession);
             calcSession.displayChanged = false;
+            calcSession.hasSingle = false;
         }
 
         //COMPLETE Enable operations on answers once equals is pushed
