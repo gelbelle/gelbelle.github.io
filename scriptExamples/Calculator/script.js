@@ -159,8 +159,8 @@ const oneOp = (operators) => {
     operators.forEach(item => {
         if (item.classList.contains("current")) numOps++
     });
-
-    return numOps === 0;
+    console.log(`Num operators: ${numOps}`);
+    return numOps === 1;
 }
 
 /** Performs the actual calculations determined by the user
@@ -220,10 +220,9 @@ const getOp = (calculator, ans = 0) => {
         calculator.toCalc[0] = ans;
         ans = getOp(calculator, ans);
     } else if (calculator.toCalc.length === 2) {
-        console.log(`Equals 2: ${calculator.toCalc}`);
-
+        console.log(`Length is 2: ${calculator.toCalc}`);
         ans = calculate(calculator, ans);
-        //calculator.toCalc = [];
+        calculator.toCalc = [];
         calculator.toCalc[0] = ans;
     }
     console.log(calculator.toCalc);
@@ -244,17 +243,28 @@ const getOp = (calculator, ans = 0) => {
  * @param {calcSession} calculator - The instance of the current calcSession object
  */
 
-//TODO Breaks when operator is changed because it's adding the new operator and the screen value to the current toCalc list. This is what it should do if it's the first time an operator has been clicked, but if it's more than that then it should just change the operator at position 1.
+//TODO Checking for one operation not working. It always only finds one operator. Find out where current is being removed from previous operator because it should have a "current" already if it's not the first operator checked.
 const handleOperations = (target, calculator) => {
     //COMPLETE watch to see if this breaks operators or not, could solve the changing operator problem easily
     calculator.prevDisplay = calculator.display.value;
-    removeTag(["clicked", "current"], calculator.operators);
-    target.classList.add("clicked", "current");
     calculator.displayChanged = false;
+    if (calculator.answered) {
+        calculator.display.value = getAnswer(calculator);
+    }
     calculator.answered = false;
-    calculator.toCalc.push(calculator.display.value);
-    calculator.toCalc.push(target.innerHTML);
-    console.log(calculator);
+    target.classList.add("current")
+    console.log(calculator)
+    if (oneOp(calculator.operators)) {
+        console.log(`One op ${calculator.toCalc}`);
+        calculator.toCalc.push(calculator.display.value);
+        calculator.toCalc.push(target.innerHTML);
+    } else {
+        console.log(`Not one op ${calculator.toCalc}`);
+        calculator.toCalc[1] = target.innerHTML;
+        console.log(calculator);
+    }
+    removeTag(["clicked", "current"], calculator.operators);
+    target.classList.add("clicked");
 }
 
 /** Deals with square root and squaring function, functions that only require a single number.
@@ -277,32 +287,30 @@ const handleSingle = (operator, calculator) => {
  * Sets hasDecimal to true;
  */
 const handleDecimal = (target, calculator) => {
-    console.log(calculator.displayChanged);
     if (!calculator.answered) {
-        if (!calculator.display.value.includes(target)) {
+        if (!calculator.display.value.includes(target) || calculator.lastPressed.classList.contains("ops")) {
             if (calculator.displayChanged) {
-                console.log(`If changed ${calculator.displayChanged}`);
                 return (calculator.display.value === "0") ? "0." : calculator.display.value + ".";
             } else {
-                console.log(`Display not changed: ${calculator.displayChanged}`);
                 calculator.displayChanged = true;
                 return "0."
             }
         }
-    } else {
-        console.log(`Answered ${calculator.displayChanged}`);
-        return "0."
-    }
+    } else return "0.";
 }
 
 const flagOperator = (toFind, operators) => {
     console.log("Content to be added")
 }
 
-//TODO Fix function description
-/** Determines whether or not the screen has changed prior to making the final calculation and checks to see if there are three values in the toCalc array.
+/** Determines if the problem has already been answered. If it is and it is a single number operator like square or square root it doesn't change the display screen.
+ * It sets the first digital to be operated on to the current display for further calculations. If it hasn't been answered already it resets the previous values and adds the current value to the list to perform an operator on.
  * Calls getOp to perform the calculation selected by the user
- * If equals is already clicked then read last answer and the operator and second number that created that answer. Continue performing that same operation with the same second number on the current answer until a different button is clicked.
+ * Stores the answer in the previous values for further manipulation if needed. Sets the displayChanged and answered flags to true.
+ * 
+ * @param {calcSession} calculator - The instance of the current calcSession object
+ * 
+ * @return {num} - The answer to the current calculation. This could be an int or a float
  */
 
 const getAnswer = (calculator) => {
@@ -332,6 +340,7 @@ const getAnswer = (calculator) => {
     calculator.displayChanged = true;
     console.log({ calculator });
     calculator.answered = true;
+    calculator.hasSingle = false;
     return ans;
 }
 
@@ -340,7 +349,7 @@ const handleNumber = (num, calculator) => {
     if (!opClicked(calculator.operators)) {
         if (!calculator.answered) {
             if (calculator.display.value === "0") {
-                calculator.prevDisplay = calculator.display.value;
+                calculator.prevDisplay = num;
                 return num;
             } else return calculator.display.value + num;
         } else {
@@ -372,7 +381,8 @@ const main = () => {
         prevVals: [],
         prevDisplay: 0,
         displayChanged: false,
-        hasSingle: false
+        hasSingle: false,
+        lastPressed: []
     }
 
     const allBtns = document.getElementById("buttons");
@@ -382,6 +392,7 @@ const main = () => {
     allBtns.addEventListener("click", (evt) => {
         console.log(calcSession);
         const { target } = evt;
+        //console.log(target);
         if (!target.matches("button")) return;
 
         if (target.classList.contains("number")) {
@@ -396,6 +407,7 @@ const main = () => {
             calcSession.hasSingle = true;
             removeTag(["clicked"], calcSession.operators)
         } else if (target.classList.contains("ops")) {
+            calcSession.hasSingle = false;
             handleOperations(target, calcSession);
             console.log(target);
         }
@@ -413,6 +425,8 @@ const main = () => {
         }
 
         if (target.id === "clear") resetCalc(calcSession.operators, calcSession);
+        calcSession.lastPressed = target;
+
     });
 }
 
