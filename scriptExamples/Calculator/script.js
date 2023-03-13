@@ -217,7 +217,7 @@ const getOp = (calculator, ans = 0) => {
     if (calculator.toCalc.length >= 3) {
         ans = calculate(calculator, ans);
         calculator.toCalc.splice(0, 3)
-        calculator.toCalc[0] = ans;
+        calculator.toCalc.unshift(ans);
         ans = getOp(calculator, ans);
     } else if (calculator.toCalc.length === 2) {
         console.log(`Length is 2: ${calculator.toCalc}`);
@@ -243,11 +243,12 @@ const getOp = (calculator, ans = 0) => {
  * @param {calcSession} calculator - The instance of the current calcSession object
  */
 
-//TODO Checking for one operation not working. It always only finds one operator. Find out where current is being removed from previous operator because it should have a "current" already if it's not the first operator checked.
+//TODO Correct to display answer on screen if the person has selected a second operator in the equation eg: 5+3-2. Should display 8 after the - is clicked.
 const handleOperations = (target, calculator) => {
     //COMPLETE watch to see if this breaks operators or not, could solve the changing operator problem easily
     calculator.prevDisplay = calculator.display.value;
     calculator.displayChanged = false;
+    if (calculator.toCalc.length === 3) calculator.answered = true;
     if (calculator.answered) {
         calculator.display.value = getAnswer(calculator);
     }
@@ -314,11 +315,12 @@ const flagOperator = (toFind, operators) => {
  */
 
 const getAnswer = (calculator) => {
+    let ans;
     if (calculator.answered) {
         console.log(calculator.toCalc);
         if (calculator.hasSingle) {
             console.log("Found square");
-            return calculator.display.value;
+            ans = getOp(calculator);
         }
         calculator.toCalc[0] = calculator.display.value;
     } else {
@@ -332,7 +334,7 @@ const getAnswer = (calculator) => {
         console.log({ calculator });
     }
 
-    let ans = getOp(calculator);
+    ans = getOp(calculator);
     calculator.prevVals[0] = ans;
     console.log(calculator.prevVals);
     calculator.toCalc = calculator.prevVals.map(val => val);
