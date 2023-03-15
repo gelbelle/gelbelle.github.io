@@ -91,20 +91,6 @@ const squareRoot = (num) => {
 }
 
 /**
- * Checks whether or not an operator has been clicked and then updates the screen accordingly
- * If an operator has been selected then the display screen will show the next number entered, it removed the "clicked" tag from the operator
- * If an operator has not been selected then it checks to see if the screen is showing a 0 or if equals has been pressed. In both these cases the screen will simply display the next number clicked. If these are both false then the screen will show what was on it before and the new number clicked.
- * It flags that the display as changed
- * 
- * @param {btn} target - The current button that has been clicked as an object
- * @param {calcSession} calculator - The instance of the current calcSession object
- */
-
-const updateDisplay = (target, calculator) => {
-    console.log("Content to be added")
-}
-
-/**
  * Resets the calculator after previous operation
  * Displays 0 on the screen
  * Removes the "clicked" tag from the classlist for all operators and the equals button
@@ -219,11 +205,14 @@ const getOp = (calculator, ans = 0) => {
         calculator.toCalc.splice(0, 3)
         calculator.toCalc.unshift(ans);
         ans = getOp(calculator, ans);
+        calculator.display.value = ans;
     } else if (calculator.toCalc.length === 2) {
         console.log(`Length is 2: ${calculator.toCalc}`);
         ans = calculate(calculator, ans);
         calculator.toCalc = [];
         calculator.toCalc[0] = ans;
+        calculator.display.value = ans;
+
     }
     console.log(calculator.toCalc);
 
@@ -250,7 +239,7 @@ const handleOperations = (target, calculator) => {
     calculator.displayChanged = false;
     if (calculator.toCalc.length === 3) calculator.answered = true;
     if (calculator.answered) {
-        calculator.display.value = getAnswer(calculator);
+        updateDisplay(getAnswer(calculator), calculator);
     }
     calculator.answered = false;
     target.classList.add("current")
@@ -343,7 +332,17 @@ const getAnswer = (calculator) => {
     console.log({ calculator });
     calculator.answered = true;
     calculator.hasSingle = false;
+    calculator.display.value = ans;
     return ans;
+}
+
+/** Changes the value displayed on the calculator screen
+ * 
+ *  * @param {calcSession} calculator - The instance of the current calcSession object
+ */
+const updateDisplay = (newDisplay, calculator) => {
+    calculator.display.value = newDisplay;
+    calculator.displayChanged = true;
 }
 
 //TODO Fix function description
